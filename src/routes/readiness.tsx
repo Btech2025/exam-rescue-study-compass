@@ -24,8 +24,9 @@ function Readiness() {
   const ranked = rankedTopics(s.exams, today);
   const acc = topicQuizAccuracy(s);
   const qa = (n: string) => acc[n.toLowerCase()];
-  const strong = ranked.filter(({ topic }) => topic.status === "Revised" || (qa(topic.name) && qa(topic.name).correct / qa(topic.name).total >= 0.8));
-  const weak = ranked.filter(({ topic }) => !strong.some((x) => x.topic.id === topic.id) && ((qa(topic.name) && qa(topic.name).correct / qa(topic.name).total < 0.6) || (topic.status === "Not Started" && topic.importance === "High")));
+  const ratio = (n: string) => { const a = qa(n); return a ? a.correct / a.total : null; };
+  const strong = ranked.filter(({ topic }) => topic.status === "Revised" || (ratio(topic.name) ?? 0) >= 0.8);
+  const weak = ranked.filter(({ topic }) => !strong.some((x) => x.topic.id === topic.id) && ((ratio(topic.name) ?? 1) < 0.6 || (topic.status === "Not Started" && topic.importance === "High")));
   const urgent = ranked.filter((x) => x.info.level === "High" && x.topic.status !== "Revised").slice(0, 5);
   const pct = (v: number) => `${Math.round(v * 100)}%`;
   const recs = [
@@ -53,7 +54,7 @@ function Readiness() {
       </div>
       <div className="grid gap-5 md:grid-cols-3">
         <Panel><PanelTitle>Strong areas</PanelTitle><ul className="space-y-1.5 text-sm">{strong.slice(0, 6).map((x) => <li key={x.topic.id} className="flex justify-between gap-2"><span className="truncate">{x.topic.name}</span><span className="text-xs text-signal">{x.topic.status === "Revised" ? "Revised" : "Quiz ≥80%"}</span></li>)}{!strong.length && <li className="text-muted-foreground">None yet — keep going.</li>}</ul></Panel>
-        <Panel><PanelTitle>Weak areas</PanelTitle><ul className="space-y-1.5 text-sm">{weak.slice(0, 6).map((x) => <li key={x.topic.id} className="flex justify-between gap-2"><span className="truncate">{x.topic.name}</span><span className="text-xs text-warning">{qa(x.topic.name) ? `Quiz ${qa(x.topic.name).correct}/${qa(x.topic.name).total}` : "Not started"}</span></li>)}{!weak.length && <li className="text-muted-foreground">No weak areas detected.</li>}</ul></Panel>
+        <Panel><PanelTitle>Weak areas</PanelTitle><ul className="space-y-1.5 text-sm">{weak.slice(0, 6).map((x) => <li key={x.topic.id} className="flex justify-between gap-2"><span className="truncate">{x.topic.name}</span><span className="text-xs text-warning">{qa(x.topic.name) ? `Quiz ${qa(x.topic.name)?.correct}/${qa(x.topic.name)?.total}` : "Not started"}</span></li>)}{!weak.length && <li className="text-muted-foreground">No weak areas detected.</li>}</ul></Panel>
         <Panel className="border-destructive/30"><PanelTitle>Urgent attention</PanelTitle><ul className="space-y-2 text-sm">{urgent.map((x) => <li key={x.topic.id} className="flex items-center justify-between gap-2"><span className="truncate">{x.topic.name}</span><PriorityBadge level={x.info.level} /></li>)}{!urgent.length && <li className="text-muted-foreground">Nothing urgent.</li>}</ul></Panel>
       </div>
       <Panel>

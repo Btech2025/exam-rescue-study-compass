@@ -66,12 +66,12 @@ const capacity = (exams: Exam[], day: string) =>
   Math.max(0, ...exams.filter((e) => e.date > day).map((e) => e.hoursPerDay * 60));
 
 function place(chunks: Task[], exams: Exam[], start: string, used: Record<string, number>) {
-  const deadline = Object.fromEntries(exams.map((e) => [e.id, e.date]));
-  const sorted = [...chunks].sort((a, b) => b.score - a.score || deadline[a.examId].localeCompare(deadline[b.examId]));
+  const deadline: Record<string, string> = Object.fromEntries(exams.map((e) => [e.id, e.date]));
+  const sorted = [...chunks].sort((a, b) => b.score - a.score || (deadline[a.examId] ?? "").localeCompare(deadline[b.examId] ?? ""));
   const placed: Task[] = [];
   const overflow: Task[] = [];
   for (const c of sorted) {
-    const end = deadline[c.examId];
+    const end = deadline[c.examId] ?? "";
     let day = start;
     let ok = false;
     while (day < end) {

@@ -104,7 +104,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
 
 export const inputCls = "h-10 w-full rounded-lg border border-input bg-surface px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30";
 
-export function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
+export function Field({ label, error, children }: { label: string; error?: string | undefined; children: ReactNode }) {
   return (
     <label className="block space-y-1.5">
       <span className="text-xs font-semibold text-muted-foreground">{label}</span>

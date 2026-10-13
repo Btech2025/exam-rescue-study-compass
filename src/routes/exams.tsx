@@ -8,7 +8,7 @@ import { actions, useAppState } from "@/lib/store";
 import type { Difficulty, Exam, Importance, Status, Topic } from "@/lib/types";
 
 export const Route = createFileRoute("/exams")({
-  validateSearch: (s: Record<string, unknown>): { new?: boolean } => (s.new === true || s.new === "true" ? { new: true } : {}),
+  validateSearch: (s: Record<string, unknown>): { new?: boolean } => (s["new"] === true || s["new"] === "true" ? { new: true } : {}),
   head: () => ({
     meta: [
       { title: "My Exams — Exam Rescue" },
@@ -24,13 +24,13 @@ const blankTopic = (): Topic => ({ id: uid(), name: "", difficulty: "Medium", im
 
 function ExamForm({ initial, onDone }: { initial: Exam | null; onDone: () => void }) {
   const [f, setF] = useState<Exam>(initial ?? { id: uid(), name: "", subject: "", date: addDays(todayISO(), 7), hoursPerDay: 2, topics: [blankTopic()] });
-  const [err, setErr] = useState<Record<string, string>>({});
+  const [err, setErr] = useState<Partial<Record<"name" | "subject" | "date" | "hours" | "topics", string>>>({});
 
   const setTopic = (id: string, p: Partial<Topic>) => setF({ ...f, topics: f.topics.map((t) => (t.id === id ? { ...t, ...p } : t)) });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const er: Record<string, string> = {};
+    const er: Partial<Record<"name" | "subject" | "date" | "hours" | "topics", string>> = {};
     if (!f.name.trim()) er.name = "Give the exam a name.";
     else if (f.name.length > 60) er.name = "Keep it under 60 characters.";
     if (!f.subject.trim()) er.subject = "Subject is required.";

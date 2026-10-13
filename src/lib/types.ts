@@ -32,7 +32,7 @@ export interface Task {
   score: number;
   kind: TaskKind;
   done: boolean;
-  completedAt?: string;
+  completedAt?: string | undefined;
 }
 
 export interface Plan {

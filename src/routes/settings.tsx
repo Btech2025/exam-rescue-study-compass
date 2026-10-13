@@ -24,7 +24,7 @@ function SettingsPage() {
       <PageHeader title="Settings" />
       <Panel>
         <PanelTitle>Profile</PanelTitle>
-        <form onSubmit={(e) => { e.preventDefault(); if (name.length > 40) return toast.error("Name is too long"); actions.setName(name.trim()); toast.success("Saved"); }} className="flex items-end gap-2">
+        <form onSubmit={(e) => { e.preventDefault(); if (name.length > 40) { toast.error("Name is too long"); return; } actions.setName(name.trim()); toast.success("Saved"); }} className="flex items-end gap-2">
           <div className="flex-1"><Field label="Your name"><input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} /></Field></div>
           <Button type="submit">Save</Button>
         </form>
