@@ -22,7 +22,7 @@ export const Route = createFileRoute("/practice")({
 
 function Practice() {
   const s = useAppState();
-  const [subject, setSubject] = useState(questionSubjects[0]);
+  const [subject, setSubject] = useState<string>(questionSubjects[0] ?? "");
   const [topic, setTopic] = useState("All");
   const [qs, setQs] = useState<Question[] | null>(null);
   const [i, setI] = useState(0);
@@ -37,7 +37,7 @@ function Practice() {
     setQs(pool); setI(0); setPicked(null); setAnswers([]); setFinished(false);
   };
   const next = () => {
-    const a = [...answers, picked === qs![i].answer];
+    const a = [...answers, picked === qs![i]?.answer];
     setAnswers(a); setPicked(null);
     if (i + 1 < qs!.length) return setI(i + 1);
     const perTopic: Record<string, { correct: number; total: number }> = {};
@@ -77,7 +77,7 @@ function Practice() {
   }
 
   if (qs) {
-    const q = qs[i];
+    const q = qs[i]!;
     return (
       <div className="mx-auto max-w-2xl space-y-5">
         <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Question {i + 1} of {qs.length}</span><Badge tone="violet">{q.topic}</Badge></div>

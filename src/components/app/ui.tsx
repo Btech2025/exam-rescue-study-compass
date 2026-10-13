@@ -114,7 +114,7 @@ export function Field({ label, error, children }: { label: string; error?: strin
   );
 }
 
-export function PageHeader({ title, sub, action }: { title: string; sub?: string; action?: ReactNode }) {
+export function PageHeader({ title, sub, action }: { title: string; sub?: string | undefined; action?: ReactNode }) {
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>

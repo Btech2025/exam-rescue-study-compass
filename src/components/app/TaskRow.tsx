@@ -6,7 +6,7 @@ import { actions } from "@/lib/store";
 import type { Task } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export function TaskRow({ task, sub }: { task: Task; sub?: string }) {
+export function TaskRow({ task, sub }: { task: Task; sub?: string | undefined }) {
   return (
     <button
       onClick={() => { actions.toggleTask(task.id); if (!task.done) toast.success("Task completed", { description: task.title }); }}
