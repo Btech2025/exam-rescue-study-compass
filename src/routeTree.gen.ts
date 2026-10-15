@@ -14,6 +14,7 @@ import { Route as ExamsRouteImport } from './routes/exams'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ReadinessRouteImport } from './routes/readiness'
+import { Route as RescueRouteImport } from './routes/rescue'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TopicsRouteImport } from './routes/topics'
 
@@ -42,6 +43,11 @@ const ReadinessRoute = ReadinessRouteImport.update({
   path: '/readiness',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RescueRoute = RescueRouteImport.update({
+  id: '/rescue',
+  path: '/rescue',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/planner': typeof PlannerRoute
   '/practice': typeof PracticeRoute
   '/readiness': typeof ReadinessRoute
+  '/rescue': typeof RescueRoute
   '/settings': typeof SettingsRoute
   '/topics': typeof TopicsRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/planner': typeof PlannerRoute
   '/practice': typeof PracticeRoute
   '/readiness': typeof ReadinessRoute
+  '/rescue': typeof RescueRoute
   '/settings': typeof SettingsRoute
   '/topics': typeof TopicsRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/planner': typeof PlannerRoute
   '/practice': typeof PracticeRoute
   '/readiness': typeof ReadinessRoute
+  '/rescue': typeof RescueRoute
   '/settings': typeof SettingsRoute
   '/topics': typeof TopicsRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/practice'
     | '/readiness'
+    | '/rescue'
     | '/settings'
     | '/topics'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/practice'
     | '/readiness'
+    | '/rescue'
     | '/settings'
     | '/topics'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/practice'
     | '/readiness'
+    | '/rescue'
     | '/settings'
     | '/topics'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   PlannerRoute: typeof PlannerRoute
   PracticeRoute: typeof PracticeRoute
   ReadinessRoute: typeof ReadinessRoute
+  RescueRoute: typeof RescueRoute
   SettingsRoute: typeof SettingsRoute
   TopicsRoute: typeof TopicsRoute
 }
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReadinessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rescue': {
+      id: '/rescue'
+      path: '/rescue'
+      fullPath: '/rescue'
+      preLoaderRoute: typeof RescueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlannerRoute: PlannerRoute,
   PracticeRoute: PracticeRoute,
   ReadinessRoute: ReadinessRoute,
+  RescueRoute: RescueRoute,
   SettingsRoute: SettingsRoute,
   TopicsRoute: TopicsRoute,
 }
