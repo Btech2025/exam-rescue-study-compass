@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Brain, ChevronsLeft, Gauge, GraduationCap, LayoutDashboard, ListChecks, LifeBuoy, Menu, Settings, Target, X } from "lucide-react";
+import { Brain, ChevronsLeft, Gauge, GraduationCap, LayoutDashboard, ListChecks, LifeBuoy, Menu, Settings, Siren, Target, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { loadState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
+  { to: "/rescue", label: "Rescue Mode", icon: Siren },
   { to: "/exams", label: "My Exams", icon: GraduationCap },
   { to: "/planner", label: "Study Planner", icon: ListChecks },
   { to: "/topics", label: "Topic Intelligence", icon: Brain },
