@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, CalendarClock, Flame, GraduationCap, Info, LifeBuoy } from "lucide-react";
+import { ArrowRight, CalendarClock, Flame, GraduationCap, Info, LifeBuoy, Siren } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { toast } from "sonner";
@@ -88,10 +88,13 @@ function Overview() {
               <Badge tone="violet">{next.subject}</Badge>
               <span className="flex items-center gap-1"><CalendarClock className="h-4 w-4" />{parseISO(next.date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</span>
             </div>
-            <Button variant="signal" size="lg" className="mt-6" onClick={rescue}>
-              <LifeBuoy className="h-5 w-5" /> Rescue My Preparation
-              {missed > 0 && <span className="rounded-md bg-signal-foreground/15 px-1.5 text-xs">{missed} missed</span>}
+            <div className="mt-6 flex flex-wrap gap-3">
+            <Link to="/rescue"><Button variant="signal" size="lg" className="h-14 px-7 text-base"><Siren className="h-5 w-5" /> Rescue Mode: what do I study now?</Button></Link>
+            <Button variant="outline" size="lg" onClick={rescue}>
+              <LifeBuoy className="h-5 w-5" /> Recover missed
+              {missed > 0 && <span className="rounded-md bg-muted px-1.5 text-xs">{missed}</span>}
             </Button>
+            </div>
           </div>
           <Countdown date={next.date} />
         </div>
