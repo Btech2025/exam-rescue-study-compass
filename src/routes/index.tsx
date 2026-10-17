@@ -15,6 +15,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Your exam countdown, today's study plan, readiness score and priority topics." },
       { property: "og:title", content: "Overview — Exam Rescue" },
       { property: "og:description", content: "Mission control for rescuing your exam preparation." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Overview,

@@ -14,6 +14,8 @@ export const Route = createFileRoute("/planner")({
       { name: "description", content: "A realistic day-by-day study schedule that respects your available hours." },
       { property: "og:title", content: "Study Planner — Exam Rescue" },
       { property: "og:description", content: "Generate, complete and recover your study plan." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Planner,

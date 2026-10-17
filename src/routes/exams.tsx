@@ -15,6 +15,8 @@ export const Route = createFileRoute("/exams")({
       { name: "description", content: "Add, edit and delete exams and syllabus topics." },
       { property: "og:title", content: "My Exams — Exam Rescue" },
       { property: "og:description", content: "Set up exams, dates, study hours and syllabus topics." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ExamsPage,
