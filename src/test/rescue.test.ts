@@ -22,7 +22,9 @@ describe("Rescue Mode", () => {
   it("recalculates after preparation status changes", () => {
     const s = state([topic("first"), topic("second")]);
     expect(rescueAnalysis(s, undefined, now)?.top3[0]?.topic.id).toBe("first");
-    s.exams[0].topics[0].status = "Revised";
+    const first = s.exams[0]?.topics[0];
+    if (!first) throw new Error("Missing test topic");
+    first.status = "Revised";
     expect(rescueAnalysis(s, undefined, now)?.ranked.map((t) => t.topic.id)).toEqual(["second"]);
   });
 
@@ -31,7 +33,9 @@ describe("Rescue Mode", () => {
     expect(rescueAnalysis(s, undefined, now)?.ranked).toEqual([]);
     s.quizzes = [{ id: "quiz", date: "2026-10-17", subject: "Data Structures", score: 3, total: 5, perTopic: { weak: { correct: 3, total: 5 } } }];
     expect(rescueAnalysis(s, undefined, now)?.ranked[0]?.quizBonus).toBe(3);
-    s.quizzes[0].perTopic.weak.correct = 4;
+    const weak = s.quizzes[0]?.perTopic["weak"];
+    if (!weak) throw new Error("Missing quiz result");
+    weak.correct = 4;
     expect(rescueAnalysis(s, undefined, now)?.ranked).toEqual([]);
   });
 
@@ -81,7 +85,9 @@ describe("Rescue Mode", () => {
 
   it("uses the selected exam and falls back safely when it is removed", () => {
     const s = state([topic("Graphs")]);
-    s.exams.push({ ...s.exams[0], id: "later", date: "2026-10-22", topics: [topic("Trees")] });
+    const exam = s.exams[0];
+    if (!exam) throw new Error("Missing test exam");
+    s.exams.push({ ...exam, id: "later", date: "2026-10-22", topics: [topic("Trees")] });
     expect(rescueAnalysis(s, "later", now)?.exam.id).toBe("later");
     s.exams.pop();
     expect(rescueAnalysis(s, "later", now)?.exam.id).toBe("exam");
