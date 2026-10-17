@@ -50,6 +50,7 @@ function Rescue() {
 
   const hrs = Math.floor(r.msLeft / 3600000);
   const d = Math.floor(hrs / 24);
+  const minutes = Math.floor(r.msLeft / 60000) % 60;
   const fits = r.neededMin <= r.availableMin;
   const setStatus = (id: string, name: string, st: Status) => { actions.setTopicStatus(id, st); toast.success(`${name} marked ${st}`, { description: "Rescue plan recalculated." }); };
 
@@ -68,7 +69,7 @@ function Rescue() {
             )}
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-xl border bg-surface/70 px-4 py-3"><div className="font-mono text-2xl font-bold">{d}d {hrs % 24}h</div><div className="text-[10px] uppercase tracking-wider text-muted-foreground">until exam</div></div>
+             <div className="rounded-xl border bg-surface/70 px-4 py-3"><div className="font-mono text-2xl font-bold">{d > 0 ? `${d}d ` : ""}{hrs % 24}h {minutes}m</div><div className="text-[10px] uppercase tracking-wider text-muted-foreground">until exam · 9am</div></div>
             <div className="rounded-xl border bg-surface/70 px-4 py-3"><div className="font-mono text-2xl font-bold text-signal">{fmtMin(r.availableMin)}</div><div className="text-[10px] uppercase tracking-wider text-muted-foreground">study time left</div></div>
             <div className="rounded-xl border bg-surface/70 px-4 py-3"><div className={cn("font-mono text-2xl font-bold", fits ? "" : "text-warning")}>{fmtMin(r.neededMin)}</div><div className="text-[10px] uppercase tracking-wider text-muted-foreground">needed</div></div>
           </div>
@@ -126,7 +127,7 @@ function Rescue() {
                 <ol className="space-y-1.5">
                   {day.sessions.map((x, k) => { const K = kindStyle[x.kind]; return (
                     <li key={k} className={cn("flex items-center gap-3 rounded-lg border px-3 py-2 text-sm", K.cls)}>
-                      <K.icon className="h-4 w-4 shrink-0" /><span className="min-w-0 flex-1 truncate text-foreground">{x.title}</span><span className="font-mono text-xs">{x.minutes}m</span>
+                       <K.icon className="h-4 w-4 shrink-0" /><span className="min-w-0 flex-1 break-words text-foreground">{x.title}</span><span className="shrink-0 font-mono text-xs">{x.minutes}m</span>
                     </li>
                   ); })}
                 </ol>

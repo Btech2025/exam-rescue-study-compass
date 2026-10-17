@@ -15,6 +15,8 @@ export const Route = createFileRoute("/practice")({
       { name: "description", content: "Multiple-choice practice with instant feedback and topic-wise results." },
       { property: "og:title", content: "Practice Arena — Exam Rescue" },
       { property: "og:description", content: "Test yourself and see which topics need work." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Practice,

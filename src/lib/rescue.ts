@@ -61,19 +61,23 @@ export function rescueAnalysis(state: AppState, examId: string | undefined, now 
 
   const acc = topicQuizAccuracy(state);
   const ranked: RescueTopic[] = exam.topics
-    .filter((t) => t.status !== "Revised" || (acc[t.name.toLowerCase()] && acc[t.name.toLowerCase()]!.correct / acc[t.name.toLowerCase()]!.total < 0.8))
+    .filter((t) => {
+      const quiz = acc[t.name.toLowerCase()];
+      return t.status !== "Revised" || (quiz && quiz.total > 0 && quiz.correct / quiz.total < 0.8);
+    })
     .map((topic) => {
       const p = topicPriority(topic, exam, today);
-      const q = acc[topic.name.toLowerCase()] ?? null;
+      const accuracy = acc[topic.name.toLowerCase()];
+      const q = accuracy && accuracy.total > 0 ? accuracy : null;
       const ratio = q ? q.correct / q.total : null;
       const quizBonus = ratio === null ? 0 : ratio < 0.5 ? 6 : ratio < 0.8 ? 3 : -2;
       const study = estimateMinutes(topic);
       const reasons: string[] = [];
       if (topic.importance === "High") reasons.push("High exam importance — likely to carry many marks");
       else if (topic.importance === "Medium") reasons.push("Moderate exam weight");
-      if (ratio !== null && ratio < 0.5) reasons.push(`Weak quiz result: ${q!.correct}/${q!.total} correct`);
-      else if (ratio !== null && ratio < 0.8) reasons.push(`Shaky quiz result: ${q!.correct}/${q!.total} correct`);
-      else if (ratio !== null) reasons.push(`Quiz looks solid (${q!.correct}/${q!.total}) — lower urgency`);
+      if (q && ratio !== null && ratio < 0.5) reasons.push(`Weak quiz result: ${q.correct}/${q.total} correct`);
+      else if (q && ratio !== null && ratio < 0.8) reasons.push(`Shaky quiz result: ${q.correct}/${q.total} correct`);
+      else if (q) reasons.push(`Quiz looks solid (${q.correct}/${q.total}) — lower urgency`);
       if (topic.status === "Not Started") reasons.push("Not started yet — biggest preparation gap");
       else if (topic.status === "Learning") reasons.push("Learning but not revised — needs a revision pass");
       else reasons.push("Marked revised, but quiz says it needs a refresh");
@@ -96,8 +100,16 @@ export function rescueAnalysis(state: AppState, examId: string | undefined, now 
   const partial: RescueResult["partial"] = [];
   const dropped: RescueTopic[] = [];
   let di = 0;
-  const free = () => (days[di] ? days[di]!.budget - days[di]!.used : 0);
-  const push = (s: Session) => { days[di]!.sessions.push(s); days[di]!.used += s.minutes; };
+  const free = () => {
+    const day = days[di];
+    return day ? day.budget - day.used : 0;
+  };
+  const push = (s: Session) => {
+    const day = days[di];
+    if (!day) return;
+    day.sessions.push(s);
+    day.used += s.minutes;
+  };
   let neededMin = 0;
 
   for (const rt of ranked) {
@@ -112,7 +124,10 @@ export function rescueAnalysis(state: AppState, examId: string | undefined, now 
       part++;
       push({ kind: "focus", title: `${rt.topic.status === "Not Started" ? "Learn" : "Revise"}: ${rt.topic.name}${blocks > 1 ? ` · block ${part}` : ""}`, minutes: len, topicId: rt.topic.id });
       remaining -= len;
-      if (free() >= BREAK + 15 && (remaining > 0 || free() > PRACTICE + BREAK)) push({ kind: "break", title: "Break — water, stretch, no phone", minutes: BREAK });
+      // Never continue working on the same day without the recovery break.
+      // If a break plus the next minimum session cannot fit, resume tomorrow.
+      if (free() >= BREAK + 15) push({ kind: "break", title: "Break — water, stretch, no phone", minutes: BREAK });
+      else di++;
     }
     if (remaining <= 0) {
       while (di < days.length && free() < PRACTICE) di++;
@@ -125,7 +140,10 @@ export function rescueAnalysis(state: AppState, examId: string | undefined, now 
   }
   // Strip trailing breaks
   for (const d of days) {
-    while (d.sessions.at(-1)?.kind === "break") { d.used -= d.sessions.pop()!.minutes; }
+    while (d.sessions.at(-1)?.kind === "break") {
+      const session = d.sessions.pop();
+      if (session) d.used -= session.minutes;
+    }
   }
 
   return {

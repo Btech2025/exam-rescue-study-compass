@@ -11,6 +11,8 @@ export const Route = createFileRoute("/readiness")({
       { name: "description", content: "Coverage, revision, quiz performance, strong and weak areas." },
       { property: "og:title", content: "Readiness Report — Exam Rescue" },
       { property: "og:description", content: "An honest estimate of how ready you are." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Readiness,

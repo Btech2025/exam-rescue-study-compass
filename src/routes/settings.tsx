@@ -11,6 +11,8 @@ export const Route = createFileRoute("/settings")({
       { name: "description", content: "Profile, data and sample data settings." },
       { property: "og:title", content: "Settings — Exam Rescue" },
       { property: "og:description", content: "Manage your Exam Rescue data." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SettingsPage,

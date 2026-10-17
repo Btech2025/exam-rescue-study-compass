@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep Rescue Mode calculations in the browser-safe pure `src/lib/rescue.ts` module, separate from the regular planner; this permits deterministic tests without changing saved planner tasks.

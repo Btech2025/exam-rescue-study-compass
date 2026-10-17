@@ -12,6 +12,8 @@ export const Route = createFileRoute("/topics")({
       { name: "description", content: "Transparent topic prioritization by exam proximity, importance, difficulty and status." },
       { property: "og:title", content: "Topic Intelligence — Exam Rescue" },
       { property: "og:description", content: "See exactly why each topic is recommended." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Topics,
