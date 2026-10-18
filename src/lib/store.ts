@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { addDays, generatePlan, recoverPlan, todayISO, uid } from "./engine";
 import type { AppState, Exam, QuizResult, Status } from "./types";
+import { appendStrategy, type Intelligence, type StrategyDay } from './intelligence';
 
 const KEY = "exam-rescue-v1";
 let state: AppState | null = null;
@@ -73,6 +74,11 @@ export function useAppState(): AppState {
 }
 
 export const actions = {
+  saveIntelligence(intelligence: Intelligence) { set(s => ({ ...s, intelligence })); },
+  deleteIntelligence() { set(({ intelligence: _removed, ...s }) => s); },
+  sendStrategy(exam: Exam, days: StrategyDay[]) {
+    set(s => ({ ...s, exams: s.exams.some(e => e.id === exam.id) ? s.exams.map(e => e.id === exam.id ? exam : e) : [...s.exams, exam], plan: appendStrategy(s.plan, exam.id, days, todayISO()) }));
+  },
   saveExam(exam: Exam) {
     set((s) => ({ ...s, exams: s.exams.some((e) => e.id === exam.id) ? s.exams.map((e) => (e.id === exam.id ? exam : e)) : [...s.exams, exam] }));
   },

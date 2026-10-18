@@ -10,6 +10,7 @@ import type { Status } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/rescue")({
+  validateSearch: (search: Record<string, unknown>): { exam?: string } => ({ exam: typeof search.exam === 'string' ? search.exam : undefined }),
   head: () => ({
     meta: [
       { title: "Rescue Mode — Exam Rescue" },
@@ -38,7 +39,8 @@ function useNow() {
 function Rescue() {
   const s = useAppState();
   const now = useNow();
-  const [examId, setExamId] = useState<string | undefined>();
+  const search = Route.useSearch();
+  const [examId, setExamId] = useState<string | undefined>(search.exam);
   const [scanning, setScanning] = useState(true);
   useEffect(() => { setScanning(true); const t = setTimeout(() => setScanning(false), 700); return () => clearTimeout(t); }, [examId]);
   const exams = rescueExams(s, now);
