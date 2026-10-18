@@ -52,7 +52,7 @@ function Topics() {
               <PriorityBadge level={info.level} /><StatusBadge status={topic.status} />
               <Badge>{topic.difficulty}</Badge><Badge>{topic.importance} importance</Badge><Badge tone="lime">~{fmtMin(minutes)}</Badge>
             </div>
-            <div className="mt-4 rounded-lg bg-surface/60 p-3">
+            <div className="mt-4 rounded-lg border border-border bg-surface p-3">
               <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Why this priority</div>
               <ul className="space-y-0.5 text-xs text-muted-foreground">{info.reasons.map((r) => <li key={r}>• {r}</li>)}</ul>
             </div>

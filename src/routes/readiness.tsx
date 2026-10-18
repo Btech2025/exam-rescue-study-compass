@@ -44,8 +44,8 @@ function Readiness() {
       <PageHeader title="Readiness Report" sub="An estimate from tracked progress and quiz results — not a guarantee of exam performance." />
       <div className="grid gap-5 lg:grid-cols-3">
         <Panel className="flex flex-col items-center justify-center gap-3 bg-hero py-8 text-center">
-          <Ring value={r.score} size={150} label="readiness" />
-          <p className="max-w-xs text-xs text-muted-foreground">{r.hasQuiz ? "45% coverage · 20% revision · 20% quiz accuracy · 15% task completion" : "55% coverage · 25% revision · 20% task completion"}</p>
+          <Ring value={r.score} size={150} label="readiness" hero />
+          <p className="max-w-xs text-xs text-white/70">{r.hasQuiz ? "45% coverage · 20% revision · 20% quiz accuracy · 15% task completion" : "55% coverage · 25% revision · 20% task completion"}</p>
         </Panel>
         <div className="grid grid-cols-2 gap-3 lg:col-span-2">
           <Stat label="Topic coverage" value={pct(r.coverage)} hint={<Progress value={r.coverage * 100} />} />

@@ -58,8 +58,8 @@ function Practice() {
       <div className="mx-auto max-w-2xl space-y-5">
         <PageHeader title="Results" sub={subject} />
         <Panel className="flex flex-col items-center gap-3 bg-hero py-8 text-center">
-          <Ring value={Math.round((score / qs.length) * 100)} label="percent" />
-          <p className="text-lg font-semibold">{score} / {qs.length} correct</p>
+          <Ring value={Math.round((score / qs.length) * 100)} label="percent" hero />
+          <p className="text-lg font-semibold text-white">{score} / {qs.length} correct</p>
         </Panel>
         <Panel>
           <PanelTitle>Topic-wise performance</PanelTitle>
@@ -90,7 +90,7 @@ function Practice() {
             {q.options.map((o, k) => {
               const state = picked === null ? "" : k === q.answer ? "border-signal bg-signal/10" : k === picked ? "border-destructive bg-destructive/10" : "opacity-50";
               return (
-                <button key={k} disabled={picked !== null} onClick={() => setPicked(k)} className={cn("flex w-full items-center gap-3 rounded-lg border bg-surface/50 p-3 text-left text-sm transition hover:border-primary/50", state)}>
+                <button key={k} disabled={picked !== null} onClick={() => setPicked(k)} className={cn("flex w-full items-center gap-3 rounded-lg border bg-card p-3 text-left text-sm transition hover:border-primary/50", state)}>
                   <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted font-mono text-xs">{"ABCD"[k]}</span>{o}
                   {picked !== null && k === q.answer && <CheckCircle2 className="ml-auto h-4 w-4 text-signal" />}
                   {picked === k && k !== q.answer && <XCircle className="ml-auto h-4 w-4 text-destructive" />}

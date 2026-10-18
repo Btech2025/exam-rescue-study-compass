@@ -68,7 +68,7 @@ function ExamForm({ initial, onDone }: { initial: Exam | null; onDone: () => voi
         </div>
         <div className="space-y-2">
           {f.topics.map((t) => (
-            <div key={t.id} className="grid grid-cols-2 gap-2 rounded-lg bg-surface/50 p-2 sm:grid-cols-[1fr_auto_auto_auto_auto]">
+            <div key={t.id} className="grid grid-cols-2 gap-2 rounded-lg border border-input bg-card p-2 sm:grid-cols-[1fr_auto_auto_auto_auto]">
               <input className={`${inputCls} col-span-2 sm:col-span-1`} value={t.name} placeholder="Topic name" onChange={(e) => setTopic(t.id, { name: e.target.value })} />
               <select className={inputCls} value={t.difficulty} onChange={(e) => setTopic(t.id, { difficulty: e.target.value as Difficulty })} aria-label="Difficulty">{["Easy", "Medium", "Hard"].map((x) => <option key={x}>{x}</option>)}</select>
               <select className={inputCls} value={t.importance} onChange={(e) => setTopic(t.id, { importance: e.target.value as Importance })} aria-label="Importance">{["Low", "Medium", "High"].map((x) => <option key={x}>{x}</option>)}</select>

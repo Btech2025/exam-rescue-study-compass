@@ -38,34 +38,38 @@
   --color-ring: var(--ring);
 }
 
+/* Light dashboard theme — clean, near-white surfaces with restrained violet accents */
 :root {
   --radius: 0.875rem;
-  --background: oklch(0.135 0.022 268);
-  --foreground: oklch(0.95 0.01 270);
-  --card: oklch(0.185 0.018 268);
-  --card-foreground: oklch(0.95 0.01 270);
-  --surface: oklch(0.225 0.02 268);
-  --popover: oklch(0.2 0.02 268);
-  --popover-foreground: oklch(0.95 0.01 270);
-  --primary: oklch(0.606 0.25 292.7);
-  --primary-foreground: oklch(0.985 0 0);
-  --signal: oklch(0.93 0.2 128);
-  --signal-foreground: oklch(0.2 0.04 130);
-  --warning: oklch(0.8 0.15 75);
-  --secondary: oklch(0.25 0.02 268);
-  --secondary-foreground: oklch(0.95 0.01 270);
-  --muted: oklch(0.24 0.018 268);
-  --muted-foreground: oklch(0.68 0.02 270);
-  --accent: oklch(0.27 0.05 292);
-  --accent-foreground: oklch(0.95 0.01 270);
-  --destructive: oklch(0.66 0.2 22);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.606 0.25 292.7);
-  --glow-primary: 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent), 0 10px 40px -10px color-mix(in oklab, var(--primary) 60%, transparent);
-  --glow-signal: 0 10px 36px -12px color-mix(in oklab, var(--signal) 70%, transparent);
-  --gradient-hero: radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--primary) 28%, transparent) 0%, transparent 55%), radial-gradient(90% 120% at 100% 100%, color-mix(in oklab, var(--signal) 10%, transparent) 0%, transparent 60%);
+  --background: oklch(0.985 0.003 268);
+  --foreground: oklch(0.22 0.02 268);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.02 268);
+  --surface: oklch(0.965 0.004 268);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.02 268);
+  --primary: oklch(0.52 0.22 285);
+  --primary-foreground: oklch(0.99 0 0);
+  --signal: oklch(0.55 0.18 155);
+  --signal-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.72 0.16 60);
+  --secondary: oklch(0.95 0.006 268);
+  --secondary-foreground: oklch(0.25 0.02 268);
+  --muted: oklch(0.94 0.005 268);
+  --muted-foreground: oklch(0.52 0.015 268);
+  --accent: oklch(0.93 0.02 285);
+  --accent-foreground: oklch(0.30 0.08 285);
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.90 0.005 268);
+  --input: oklch(0.88 0.005 268);
+  --ring: oklch(0.52 0.22 285);
+  --glow-primary: 0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent), 0 8px 32px -8px color-mix(in oklab, var(--primary) 35%, transparent);
+  --glow-signal: 0 6px 28px -10px color-mix(in oklab, var(--signal) 40%, transparent);
+  /* Premium dark navy hero gradient with violet depth */
+  --gradient-hero: radial-gradient(120% 140% at 0% 0%, oklch(0.42 0.12 285 / 0.45) 0%, transparent 55%), radial-gradient(90% 120% at 100% 100%, oklch(0.50 0.10 285 / 0.15) 0%, transparent 60%), linear-gradient(135deg, oklch(0.16 0.03 268) 0%, oklch(0.20 0.05 285) 100%);
+  --gradient-hero-text: oklch(0.97 0.01 268);
+  --gradient-hero-muted: oklch(0.78 0.02 268);
 }
 
 @utility panel {
@@ -98,6 +102,20 @@
     letter-spacing: -0.02em;
   }
   input, select, textarea {
-    color-scheme: dark;
+    color-scheme: light;
   }
+}
+
+/* Smooth scroll for in-page navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Subtle fade-in on route transitions */
+@keyframes route-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.route-enter {
+  animation: route-fade-in 0.3s ease-out;
 }

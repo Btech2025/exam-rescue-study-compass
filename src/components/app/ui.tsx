@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 import type { PriorityLevel, Status } from "@/lib/types";
 
 const btn = {
-  primary: "bg-primary text-primary-foreground hover:brightness-110 glow-primary",
-  signal: "bg-signal text-signal-foreground hover:brightness-105 glow-signal",
-  outline: "border border-input bg-transparent text-foreground hover:bg-surface",
+  primary: "bg-primary text-primary-foreground hover:brightness-110 shadow-sm hover:shadow-md",
+  signal: "bg-signal text-signal-foreground hover:brightness-110 shadow-sm hover:shadow-md",
+  outline: "border border-input bg-card text-foreground hover:bg-surface hover:border-primary/40",
   ghost: "text-muted-foreground hover:bg-surface hover:text-foreground",
-  danger: "border border-destructive/40 text-destructive hover:bg-destructive/10",
+  danger: "border border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive/50",
 };
 
 export function Button({ variant = "primary", size = "md", className, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof btn; size?: "sm" | "md" | "lg" }) {
@@ -26,7 +26,7 @@ export function Button({ variant = "primary", size = "md", className, ...p }: Bu
 }
 
 export function Panel({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("panel p-5", className)}>{children}</div>;
+  return <div className={cn("panel p-5 shadow-sm", className)}>{children}</div>;
 }
 
 export function PanelTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
@@ -39,10 +39,10 @@ export function PanelTitle({ children, action }: { children: ReactNode; action?:
 }
 
 const tones = {
-  violet: "bg-primary/15 text-primary border-primary/30",
-  lime: "bg-signal/15 text-signal border-signal/30",
+  violet: "bg-primary/10 text-primary border-primary/20",
+  lime: "bg-signal/10 text-signal border-signal/20",
   amber: "bg-warning/15 text-warning border-warning/30",
-  red: "bg-destructive/15 text-destructive border-destructive/30",
+  red: "bg-destructive/10 text-destructive border-destructive/20",
   muted: "bg-muted text-muted-foreground border-border",
 };
 export function Badge({ tone = "muted", children }: { tone?: keyof typeof tones; children: ReactNode }) {
@@ -64,19 +64,19 @@ export function Progress({ value, tone = "primary" }: { value: number; tone?: "p
   );
 }
 
-export function Ring({ value, size = 120, label }: { value: number; size?: number; label?: string }) {
+export function Ring({ value, size = 120, label, hero = false }: { value: number; size?: number; label?: string; hero?: boolean }) {
   const r = (size - 12) / 2;
   const c = 2 * Math.PI * r;
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={10} className="fill-none stroke-muted" />
-        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={10} strokeLinecap="round" className="fill-none stroke-signal transition-all duration-1000"
+        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={10} strokeLinecap="round" className="fill-none stroke-primary transition-all duration-1000"
           strokeDasharray={c} strokeDashoffset={c * (1 - value / 100)} />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono text-3xl font-bold">{value}</span>
-        {label && <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>}
+        <span className={cn("font-mono text-3xl font-bold", hero ? "text-white" : "text-foreground")}>{value}</span>
+        {label && <span className={cn("text-[10px] uppercase tracking-wider", hero ? "text-white/70" : "text-muted-foreground")}>{label}</span>}
       </div>
     </div>
   );
@@ -90,11 +90,11 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
   }, [onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 backdrop-blur-sm sm:items-center sm:p-4 animate-in fade-in">
-      <div className="panel max-h-[92vh] w-full max-w-2xl overflow-y-auto p-6 animate-in slide-in-from-bottom-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/30 backdrop-blur-sm sm:items-center sm:p-4 animate-in fade-in">
+      <div className="panel max-h-[92vh] w-full max-w-2xl overflow-y-auto p-6 shadow-xl animate-in slide-in-from-bottom-4">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <button onClick={onClose} className="rounded-md p-1 text-muted-foreground hover:bg-surface" aria-label="Close"><X className="h-5 w-5" /></button>
+          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+          <button onClick={onClose} className="rounded-md p-1 text-muted-foreground transition hover:bg-surface hover:text-foreground" aria-label="Close"><X className="h-5 w-5" /></button>
         </div>
         {children}
       </div>
@@ -102,7 +102,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
   );
 }
 
-export const inputCls = "h-10 w-full rounded-lg border border-input bg-surface px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30";
+export const inputCls = "h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export function Field({ label, error, children }: { label: string; error?: string | undefined; children: ReactNode }) {
   return (
@@ -118,7 +118,7 @@ export function PageHeader({ title, sub, action }: { title: string; sub?: string
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{title}</h1>
         {sub && <p className="mt-1 text-sm text-muted-foreground">{sub}</p>}
       </div>
       {action && <div className="flex flex-wrap gap-2">{action}</div>}
@@ -129,9 +129,9 @@ export function PageHeader({ title, sub, action }: { title: string; sub?: string
 export function EmptyState({ icon, title, text, action }: { icon: ReactNode; title: string; text: string; action?: ReactNode }) {
   return (
     <div className="panel flex flex-col items-center px-6 py-14 text-center bg-hero">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">{icon}</div>
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm text-muted-foreground">{text}</p>
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/20 text-primary">{icon}</div>
+      <h3 className="text-lg font-semibold text-foreground" style={{ color: "var(--gradient-hero-text)" }}>{title}</h3>
+      <p className="mt-1 max-w-sm text-sm" style={{ color: "var(--gradient-hero-muted)" }}>{text}</p>
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
@@ -139,9 +139,9 @@ export function EmptyState({ icon, title, text, action }: { icon: ReactNode; tit
 
 export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
   return (
-    <div className="panel p-4">
+    <div className="panel p-4 shadow-sm">
       <div className="text-xs font-semibold text-muted-foreground">{label}</div>
-      <div className="mt-1 font-mono text-2xl font-bold">{value}</div>
+      <div className="mt-1 font-mono text-2xl font-bold text-foreground">{value}</div>
       {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}
     </div>
   );
