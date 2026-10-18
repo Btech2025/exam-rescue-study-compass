@@ -13,9 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ExamsRouteImport } from './routes/exams'
 import { Route as PlannerRouteImport } from './routes/planner'
 import { Route as PracticeRouteImport } from './routes/practice'
+import { Route as PyqRouteImport } from './routes/pyq'
 import { Route as ReadinessRouteImport } from './routes/readiness'
 import { Route as RescueRouteImport } from './routes/rescue'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SyllabusRouteImport } from './routes/syllabus'
 import { Route as TopicsRouteImport } from './routes/topics'
 
 const IndexRoute = IndexRouteImport.update({
@@ -38,6 +40,11 @@ const PracticeRoute = PracticeRouteImport.update({
   path: '/practice',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PyqRoute = PyqRouteImport.update({
+  id: '/pyq',
+  path: '/pyq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReadinessRoute = ReadinessRouteImport.update({
   id: '/readiness',
   path: '/readiness',
@@ -53,6 +60,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SyllabusRoute = SyllabusRouteImport.update({
+  id: '/syllabus',
+  path: '/syllabus',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TopicsRoute = TopicsRouteImport.update({
   id: '/topics',
   path: '/topics',
@@ -64,9 +76,11 @@ export interface FileRoutesByFullPath {
   '/exams': typeof ExamsRoute
   '/planner': typeof PlannerRoute
   '/practice': typeof PracticeRoute
+  '/pyq': typeof PyqRoute
   '/readiness': typeof ReadinessRoute
   '/rescue': typeof RescueRoute
   '/settings': typeof SettingsRoute
+  '/syllabus': typeof SyllabusRoute
   '/topics': typeof TopicsRoute
 }
 export interface FileRoutesByTo {
@@ -74,9 +88,11 @@ export interface FileRoutesByTo {
   '/exams': typeof ExamsRoute
   '/planner': typeof PlannerRoute
   '/practice': typeof PracticeRoute
+  '/pyq': typeof PyqRoute
   '/readiness': typeof ReadinessRoute
   '/rescue': typeof RescueRoute
   '/settings': typeof SettingsRoute
+  '/syllabus': typeof SyllabusRoute
   '/topics': typeof TopicsRoute
 }
 export interface FileRoutesById {
@@ -85,9 +101,11 @@ export interface FileRoutesById {
   '/exams': typeof ExamsRoute
   '/planner': typeof PlannerRoute
   '/practice': typeof PracticeRoute
+  '/pyq': typeof PyqRoute
   '/readiness': typeof ReadinessRoute
   '/rescue': typeof RescueRoute
   '/settings': typeof SettingsRoute
+  '/syllabus': typeof SyllabusRoute
   '/topics': typeof TopicsRoute
 }
 export interface FileRouteTypes {
@@ -97,9 +115,11 @@ export interface FileRouteTypes {
     | '/exams'
     | '/planner'
     | '/practice'
+    | '/pyq'
     | '/readiness'
     | '/rescue'
     | '/settings'
+    | '/syllabus'
     | '/topics'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -107,9 +127,11 @@ export interface FileRouteTypes {
     | '/exams'
     | '/planner'
     | '/practice'
+    | '/pyq'
     | '/readiness'
     | '/rescue'
     | '/settings'
+    | '/syllabus'
     | '/topics'
   id:
     | '__root__'
@@ -117,9 +139,11 @@ export interface FileRouteTypes {
     | '/exams'
     | '/planner'
     | '/practice'
+    | '/pyq'
     | '/readiness'
     | '/rescue'
     | '/settings'
+    | '/syllabus'
     | '/topics'
   fileRoutesById: FileRoutesById
 }
@@ -128,9 +152,11 @@ export interface RootRouteChildren {
   ExamsRoute: typeof ExamsRoute
   PlannerRoute: typeof PlannerRoute
   PracticeRoute: typeof PracticeRoute
+  PyqRoute: typeof PyqRoute
   ReadinessRoute: typeof ReadinessRoute
   RescueRoute: typeof RescueRoute
   SettingsRoute: typeof SettingsRoute
+  SyllabusRoute: typeof SyllabusRoute
   TopicsRoute: typeof TopicsRoute
 }
 
@@ -164,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PracticeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pyq': {
+      id: '/pyq'
+      path: '/pyq'
+      fullPath: '/pyq'
+      preLoaderRoute: typeof PyqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/readiness': {
       id: '/readiness'
       path: '/readiness'
@@ -185,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/syllabus': {
+      id: '/syllabus'
+      path: '/syllabus'
+      fullPath: '/syllabus'
+      preLoaderRoute: typeof SyllabusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/topics': {
       id: '/topics'
       path: '/topics'
@@ -200,9 +240,11 @@ const rootRouteChildren: RootRouteChildren = {
   ExamsRoute: ExamsRoute,
   PlannerRoute: PlannerRoute,
   PracticeRoute: PracticeRoute,
+  PyqRoute: PyqRoute,
   ReadinessRoute: ReadinessRoute,
   RescueRoute: RescueRoute,
   SettingsRoute: SettingsRoute,
+  SyllabusRoute: SyllabusRoute,
   TopicsRoute: TopicsRoute,
 }
 export const routeTree = rootRouteImport
