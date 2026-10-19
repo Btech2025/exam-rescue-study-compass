@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
+  ArrowRight,
   Brain,
   CheckCircle2,
   ChevronDown,
@@ -10,6 +11,7 @@ import {
   LifeBuoy,
   ListChecks,
   Siren,
+  Sparkles,
   Target,
   Timer,
 } from "lucide-react";
@@ -22,6 +24,8 @@ import {
   Panel,
   PanelTitle,
   PriorityBadge,
+  Progress,
+  Ring,
   StatusBadge,
   inputCls,
 } from "@/components/app/ui";
@@ -85,26 +89,36 @@ function TopicCard({
   return (
     <Panel
       className={cn(
-        "relative flex flex-col animate-in fade-in slide-in-from-bottom-2 transition hover:shadow-md",
-        isTop && "border-primary/40 shadow-sm",
+        "animate-card relative flex flex-col transition hover:shadow-md",
+        isTop && "border-primary/40 shadow-sm glow-primary",
       )}
+      style={{ animationDelay: `${(rank - 1) * 100}ms` }}
     >
-      <div className="flex items-start justify-between gap-2">
+      {isTop && (
+        <div className="absolute -top-3 left-4 flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
+          <Sparkles className="h-3 w-3" /> Study first
+        </div>
+      )}
+      <div className="flex items-start justify-between gap-2 pt-1">
         <span
           className={cn(
-            "flex h-9 w-9 items-center justify-center rounded-xl font-mono text-lg font-bold",
-            isTop ? "bg-primary text-primary-foreground shadow-sm" : "bg-primary/10 text-primary",
+            "flex h-10 w-10 items-center justify-center rounded-xl font-mono text-lg font-bold transition",
+            isTop
+              ? "bg-gradient-to-br from-primary to-[oklch(0.70_0.15_285)] text-primary-foreground shadow-md"
+              : "bg-primary/10 text-primary",
           )}
         >
           {rank}
         </span>
         <div className="text-right">
           <div className="font-mono text-xl font-bold text-foreground">{t.value}</div>
-          <div className="text-[10px] uppercase text-muted-foreground">value score</div>
+          <div className="text-[10px] font-semibold uppercase text-muted-foreground">
+            value score
+          </div>
         </div>
       </div>
       <h3 className="mt-3 text-lg font-semibold text-foreground">{t.topic.name}</h3>
-      <div className="mt-1 flex flex-wrap gap-1.5">
+      <div className="mt-2 flex flex-wrap gap-1.5">
         <StatusBadge status={t.topic.status} />
         <Badge>{t.topic.difficulty}</Badge>
         <Badge tone="violet">
@@ -112,10 +126,10 @@ function TopicCard({
           {fmtMin(t.minutes)}
         </Badge>
       </div>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <p className="mt-4 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
         Why this topic
       </p>
-      <ul className="mt-1.5 flex-1 space-y-1 text-sm text-muted-foreground">
+      <ul className="mt-1.5 flex-1 space-y-1.5 text-sm text-muted-foreground">
         {t.reasons.map((x) => (
           <li key={x} className="flex gap-2">
             <Flame className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
@@ -225,27 +239,31 @@ function Rescue() {
     toast.success(`${name} marked ${st}`, { description: "Rescue plan recalculated." });
   };
 
-  // Group topics: "Study This First" = top 3, "Next" = rest of ranked minus dropped, "If Time Allows" = dropped
   const studyFirst = r.top3;
   const nextTopics = r.ranked.slice(3).filter((t) => !r.dropped.includes(t));
   const ifTimeAllows = r.dropped;
 
-  // Editable schedule: use planner tasks for this exam
+  // Progress: how many ranked topics are revised
+  const revisedCount = r.ranked.filter((t) => t.topic.status === "Revised").length;
+  const progressPct = r.ranked.length ? (revisedCount / r.ranked.length) * 100 : 0;
+
   const examTasks = (s.plan?.tasks ?? []).filter(
     (t) => t.examId === r.exam.id && t.date >= todayISO(),
   );
+  const examTasksDone = examTasks.filter((t) => t.done).length;
 
   return (
     <div className="space-y-5">
-      <Panel className="bg-hero relative overflow-hidden p-6 sm:p-8">
+      {/* Mission control hero */}
+      <Panel className="bg-hero animate-card relative overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.75_0.2_155)]">
-              <Siren className="h-4 w-4 animate-pulse" />
+          <div className="flex-1">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-[oklch(0.70_0.15_285)]">
+              <Siren className="h-4 w-4 animate-pulse-glow" />
               Rescue mode active
             </div>
             <h1 className="mt-2 text-3xl font-bold text-white sm:text-4xl">
-              What should I study <span className="text-[oklch(0.75_0.2_155)]">right now?</span>
+              What should I study <span className="text-[oklch(0.70_0.15_285)]">right now?</span>
             </h1>
             <p className="mt-2 max-w-xl text-sm text-white/70">
               Ranked from your saved topics, preparation status and quiz results. Rule-based scoring
@@ -254,7 +272,7 @@ function Rescue() {
             {exams.length > 1 && (
               <select
                 aria-label="Exam"
-                className={`${inputCls} mt-4 max-w-xs bg-white/10 border-white/20 text-white`}
+                className={`${inputCls} mt-4 max-w-xs border-white/20 bg-white/10 text-white`}
                 value={r.exam.id}
                 onChange={(e) => setExamId(e.target.value)}
               >
@@ -267,51 +285,76 @@ function Rescue() {
             )}
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur transition hover:bg-white/10">
               <div className="font-mono text-2xl font-bold text-white">
                 {d > 0 ? `${d}d ` : ""}
                 {hrs % 24}h {minutes}m
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-white/60">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
                 until exam · 9am
               </div>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
-              <div className="font-mono text-2xl font-bold text-[oklch(0.75_0.2_155)]">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur transition hover:bg-white/10">
+              <div className="font-mono text-2xl font-bold text-[oklch(0.70_0.15_285)]">
                 {fmtMin(r.availableMin)}
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-white/60">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
                 study time left
               </div>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur transition hover:bg-white/10">
               <div
                 className={cn("font-mono text-2xl font-bold text-white", !fits && "text-warning")}
               >
                 {fmtMin(r.neededMin)}
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-white/60">needed</div>
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
+                needed
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Progress indicator */}
+        {!scanning && r.ranked.length > 0 && (
+          <div className="mt-6 border-t border-white/10 pt-4">
+            <div className="mb-2 flex items-center justify-between text-xs text-white/70">
+              <span className="flex items-center gap-1.5 font-semibold">
+                <CheckCircle2 className="h-4 w-4 text-[oklch(0.70_0.15_285)]" />
+                Rescue progress
+              </span>
+              <span className="font-mono">
+                {revisedCount}/{r.ranked.length} topics revised
+              </span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-primary to-[oklch(0.70_0.15_285)] transition-all duration-700"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+          </div>
+        )}
       </Panel>
 
       {scanning ? (
         <div className="grid gap-4 md:grid-cols-3">
           {[0, 1, 2].map((k) => (
-            <div key={k} className="panel h-56 animate-pulse" />
+            <div key={k} className="skeleton h-56 rounded-xl" />
           ))}
         </div>
       ) : r.top3.length === 0 ? (
         <Panel className="text-center">
-          <CheckCircle2 className="mx-auto h-8 w-8 text-signal" />
-          <p className="mt-2 font-semibold text-foreground">
+          <CheckCircle2 className="mx-auto h-10 w-10 text-signal" />
+          <p className="mt-3 text-lg font-semibold text-foreground">
             Every topic for {r.exam.subject} is revised and quiz-solid.
           </p>
-          <p className="text-sm text-muted-foreground">Take a mixed practice quiz to stay sharp.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Take a mixed practice quiz to stay sharp.
+          </p>
           <Link to="/practice">
-            <Button className="mt-4" variant="signal">
-              Practice now
+            <Button className="mt-5" variant="signal">
+              <Target className="h-4 w-4" /> Practice now
             </Button>
           </Link>
         </Panel>
@@ -376,7 +419,7 @@ function Rescue() {
                 the higher-priority topics.
               </p>
               <div className="space-y-2">
-                {ifTimeAllows.map((t, i) => (
+                {ifTimeAllows.map((t) => (
                   <div
                     key={t.topic.id}
                     className="flex items-center gap-3 rounded-lg border bg-surface p-3 text-sm"
@@ -431,7 +474,9 @@ function Rescue() {
             <div className="flex items-center gap-2">
               <ListChecks className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Your revision schedule</h2>
-              <Badge tone="muted">{examTasks.length} tasks</Badge>
+              <Badge tone="muted">
+                {examTasksDone}/{examTasks.length} done
+              </Badge>
             </div>
             {scheduleOpen ? (
               <ChevronUp className="h-5 w-5 text-muted-foreground" />
@@ -441,15 +486,15 @@ function Rescue() {
           </button>
           {scheduleOpen && (
             <>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Check off tasks as you complete them. Your progress updates in real time across the
-                app.
-              </p>
+              <div className="mb-4">
+                <Progress value={(examTasksDone / examTasks.length) * 100} tone="signal" />
+              </div>
               <div className="space-y-3">
                 {Array.from(new Set(examTasks.map((t) => t.date)))
                   .sort()
                   .map((date) => {
                     const dayTasks = examTasks.filter((t) => t.date === date);
+                    const dayDone = dayTasks.filter((t) => t.done).length;
                     return (
                       <div key={date} className="rounded-xl border bg-surface p-4">
                         <div className="mb-3 flex items-center justify-between">
@@ -457,7 +502,7 @@ function Rescue() {
                             {date === todayISO() ? "Today" : fmtDay(date)}
                           </h4>
                           <span className="font-mono text-xs text-muted-foreground">
-                            {dayTasks.filter((t) => t.done).length}/{dayTasks.length} done
+                            {dayDone}/{dayTasks.length} done
                           </span>
                         </div>
                         <div className="space-y-2">
@@ -474,7 +519,7 @@ function Rescue() {
         </Panel>
       )}
 
-      {/* Emergency session plan (from rescue engine) */}
+      {/* Emergency session plan */}
       {!scanning && r.days.length > 0 && (
         <Panel>
           <PanelTitle
@@ -535,7 +580,9 @@ function Rescue() {
           </Button>
         </Link>
         <Link to="/planner">
-          <Button variant="ghost">Open full planner</Button>
+          <Button variant="ghost">
+            Open full planner <ArrowRight className="h-4 w-4" />
+          </Button>
         </Link>
       </div>
     </div>

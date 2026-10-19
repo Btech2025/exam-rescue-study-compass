@@ -38,38 +38,64 @@
   --color-ring: var(--ring);
 }
 
-/* Light dashboard theme — clean, near-white surfaces with restrained violet accents */
+/* ── Mission Control palette ── Light workspace + dark navy hero ── */
 :root {
   --radius: 0.875rem;
-  --background: oklch(0.985 0.003 268);
-  --foreground: oklch(0.22 0.02 268);
+
+  /* Soft lavender workspace */
+  --background: oklch(0.975 0.006 285);
+  --foreground: oklch(0.2 0.02 268);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 268);
-  --surface: oklch(0.965 0.004 268);
+  --card-foreground: oklch(0.2 0.02 268);
+  --surface: oklch(0.965 0.008 285);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 268);
-  --primary: oklch(0.52 0.22 285);
+  --popover-foreground: oklch(0.2 0.02 268);
+
+  /* Rich purple primary #8B5CF6 */
+  --primary: oklch(0.58 0.2 285);
   --primary-foreground: oklch(0.99 0 0);
-  --signal: oklch(0.55 0.18 155);
+
+  /* Electric violet accent #A78BFA */
+  --accent-violet: oklch(0.7 0.15 285);
+  --accent-foreground: oklch(0.3 0.1 285);
+
+  /* Signal green */
+  --signal: oklch(0.6 0.16 155);
   --signal-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.72 0.16 60);
-  --secondary: oklch(0.95 0.006 268);
+
+  /* Warm orange #F59E0B */
+  --warning: oklch(0.75 0.16 65);
+  --warning-foreground: oklch(0.2 0.02 268);
+
+  --secondary: oklch(0.95 0.01 285);
   --secondary-foreground: oklch(0.25 0.02 268);
-  --muted: oklch(0.94 0.005 268);
-  --muted-foreground: oklch(0.52 0.015 268);
-  --accent: oklch(0.93 0.02 285);
-  --accent-foreground: oklch(0.30 0.08 285);
+  --muted: oklch(0.94 0.008 285);
+  --muted-foreground: oklch(0.5 0.015 268);
+  --accent: oklch(0.93 0.025 285);
+
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.90 0.005 268);
-  --input: oklch(0.88 0.005 268);
-  --ring: oklch(0.52 0.22 285);
-  --glow-primary: 0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent), 0 8px 32px -8px color-mix(in oklab, var(--primary) 35%, transparent);
-  --glow-signal: 0 6px 28px -10px color-mix(in oklab, var(--signal) 40%, transparent);
-  /* Premium dark navy hero gradient with violet depth */
-  --gradient-hero: radial-gradient(120% 140% at 0% 0%, oklch(0.42 0.12 285 / 0.45) 0%, transparent 55%), radial-gradient(90% 120% at 100% 100%, oklch(0.50 0.10 285 / 0.15) 0%, transparent 60%), linear-gradient(135deg, oklch(0.16 0.03 268) 0%, oklch(0.20 0.05 285) 100%);
+  --border: oklch(0.9 0.008 285);
+  --input: oklch(0.88 0.008 285);
+  --ring: oklch(0.58 0.2 285);
+
+  /* Deep navy #10172B hero gradient with purple/violet depth */
+  --gradient-hero:
+    radial-gradient(100% 120% at 0% 0%, oklch(0.45 0.14 285 / 0.5) 0%, transparent 50%),
+    radial-gradient(80% 100% at 100% 100%, oklch(0.55 0.12 285 / 0.2) 0%, transparent 55%),
+    linear-gradient(135deg, oklch(0.14 0.025 268) 0%, oklch(0.18 0.045 285) 100%);
   --gradient-hero-text: oklch(0.97 0.01 268);
-  --gradient-hero-muted: oklch(0.78 0.02 268);
+  --gradient-hero-muted: oklch(0.8 0.02 268);
+
+  /* Glow shadows */
+  --glow-primary:
+    0 0 0 1px color-mix(in oklab, var(--primary) 15%, transparent),
+    0 8px 32px -8px color-mix(in oklab, var(--primary) 35%, transparent);
+  --glow-signal: 0 6px 28px -10px color-mix(in oklab, var(--signal) 40%, transparent);
+  --glow-warning: 0 6px 28px -10px color-mix(in oklab, var(--warning) 40%, transparent);
+
+  /* Sidebar */
+  --sidebar-bg: oklch(0.99 0.002 285);
 }
 
 @utility panel {
@@ -82,6 +108,9 @@
 }
 @utility glow-signal {
   box-shadow: var(--glow-signal);
+}
+@utility glow-warning {
+  box-shadow: var(--glow-warning);
 }
 @utility bg-hero {
   background-image: var(--gradient-hero);
@@ -97,25 +126,144 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     color-scheme: light;
+  }
+  /* Custom focus ring for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }
 
-/* Smooth scroll for in-page navigation */
 html {
   scroll-behavior: smooth;
 }
 
-/* Subtle fade-in on route transitions */
+/* ── Animations ── */
 @keyframes route-fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .route-enter {
-  animation: route-fade-in 0.3s ease-out;
+  animation: route-fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-card {
+  animation: card-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes check-draw {
+  0% {
+    stroke-dashoffset: 24;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+.animate-check {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: check-draw 0.3s ease-out forwards;
+}
+
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+}
+.animate-progress {
+  animation: progress-fill 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: var(--ring-circumference);
+  }
+}
+.animate-ring {
+  animation: ring-fill 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2) rotate(90deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(180deg);
+  }
+}
+.animate-sparkle {
+  animation: sparkle 0.6s ease-out forwards;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    color-mix(in oklab, var(--muted) 60%, var(--card)) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

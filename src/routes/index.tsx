@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
+  BookOpenCheck,
   CalendarClock,
   FileSearch,
   Flame,
@@ -9,6 +10,7 @@ import {
   LayoutDashboard,
   LifeBuoy,
   ListChecks,
+  Sparkles,
   Siren,
   Target,
   Upload,
@@ -25,6 +27,7 @@ import {
   PriorityBadge,
   Progress,
   Ring,
+  Stat,
 } from "@/components/app/ui";
 import { TaskRow } from "@/components/app/TaskRow";
 import {
@@ -73,12 +76,14 @@ function Countdown({ date }: { date: string }) {
       {parts.map(([v, l]) => (
         <div
           key={l}
-          className="min-w-[60px] rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center backdrop-blur"
+          className="min-w-[60px] rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center backdrop-blur transition hover:bg-white/10"
         >
-          <div className="font-mono text-2xl font-bold sm:text-3xl text-white">
+          <div className="font-mono text-2xl font-bold text-white sm:text-3xl">
             {String(v).padStart(2, "0")}
           </div>
-          <div className="text-[10px] uppercase tracking-wider text-white/60">{l}</div>
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
+            {l}
+          </div>
         </div>
       ))}
     </div>
@@ -103,13 +108,39 @@ const STEPS = [
   },
 ] as const;
 
+const QUICK_ACTIONS = [
+  {
+    icon: Upload,
+    label: "Upload material",
+    sub: "Syllabus PDF or notes",
+    to: "/syllabus" as const,
+  },
+  {
+    icon: BookOpenCheck,
+    label: "Analyze syllabus",
+    sub: "Extract topics & units",
+    to: "/syllabus" as const,
+  },
+  {
+    icon: FileSearch,
+    label: "Research PYQs",
+    sub: "Review past papers",
+    to: "/pyq" as const,
+  },
+  {
+    icon: ListChecks,
+    label: "Plan revision",
+    sub: "Day-by-day schedule",
+    to: "/planner" as const,
+  },
+] as const;
+
 function LandingHero() {
-  const nav = useNavigate();
   return (
     <section className="relative overflow-hidden rounded-2xl bg-hero px-6 py-16 sm:px-10 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-3xl text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur">
-          <Siren className="h-3.5 w-3.5 text-[oklch(0.75_0.2_155)]" />
+          <Sparkles className="h-3.5 w-3.5 text-[oklch(0.70_0.15_285)]" />
           Rule-based exam prep, not AI guesswork
         </div>
         <h1 className="font-display text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
@@ -154,8 +185,12 @@ function HowItWorks() {
       </div>
       <div className="grid gap-5 md:grid-cols-3">
         {STEPS.map(({ icon: Icon, title, text }, i) => (
-          <div key={title} className="panel group p-6 transition hover:shadow-md">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:bg-primary/15">
+          <div
+            key={title}
+            className="panel animate-card group p-6 transition hover:shadow-md"
+            style={{ animationDelay: `${i * 80}ms` }}
+          >
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:scale-110 group-hover:bg-primary/15">
               <Icon className="h-6 w-6" />
             </div>
             <div className="mb-2 flex items-center gap-2">
@@ -184,7 +219,6 @@ function Overview() {
   const [showCalc, setShowCalc] = useState(false);
   const next = upcomingExams(s.exams, today)[0];
 
-  // No exams yet → show the landing page
   if (!next) {
     return (
       <div className="space-y-12">
@@ -218,7 +252,6 @@ function Overview() {
     );
   }
 
-  // Has exams → show dashboard overview (preserved functionality)
   const r = readiness(s, today)!;
   const todays = (s.plan?.tasks ?? []).filter((t) => t.date === today);
   const target = todays.reduce((a, t) => a + t.minutes, 0);
@@ -233,6 +266,8 @@ function Overview() {
   const hour = new Date().getHours();
   const greet = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const examName = (id: string) => s.exams.find((e) => e.id === id)?.subject ?? "";
+  const todaysDone = todays.filter((t) => t.done).length;
+  const todaysTotal = todays.length;
 
   const rescue = () => {
     const res = actions.recover();
@@ -249,16 +284,19 @@ function Overview() {
 
   return (
     <div className="space-y-5">
-      <Panel className="bg-hero relative overflow-hidden p-6 sm:p-8">
+      {/* Mission control hero */}
+      <Panel className="bg-hero animate-card relative overflow-hidden p-6 sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-sm text-white/60">
+            <p className="text-sm font-medium text-white/60">
               {greet}
               {s.settings.name ? `, ${s.settings.name}` : ""}. Next up:
             </p>
             <h1 className="mt-1 text-2xl font-bold text-white sm:text-3xl">{next.name}</h1>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/70">
-              <Badge tone="violet">{next.subject}</Badge>
+              <Badge tone="violet" className="border-white/20 bg-white/10 text-white">
+                {next.subject}
+              </Badge>
               <span className="flex items-center gap-1">
                 <CalendarClock className="h-4 w-4" />
                 {parseISO(next.date).toLocaleDateString(undefined, {
@@ -271,7 +309,7 @@ function Overview() {
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/rescue">
                 <Button variant="signal" size="lg" className="h-14 px-7 text-base">
-                  <Siren className="h-5 w-5" /> Rescue Mode: what do I study now?
+                  <Siren className="h-5 w-5" /> Start Rescue Mode
                 </Button>
               </Link>
               <Button
@@ -291,33 +329,78 @@ function Overview() {
         </div>
       </Panel>
 
+      {/* Stats row */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Stat
+          label="Today's target"
+          icon={<Target className="h-4 w-4" />}
+          value={
+            <span>
+              {fmtMin(doneMin)}{" "}
+              <span className="text-base text-muted-foreground">/ {fmtMin(target)}</span>
+            </span>
+          }
+          hint={
+            target ? `${todaysTotal - todaysDone} task(s) remaining` : "Nothing scheduled today"
+          }
+        />
+        <Stat
+          label="Preparation"
+          icon={<GraduationCap className="h-4 w-4" />}
+          value={`${Math.round(r.coverage * 100)}%`}
+          hint={`${r.topicCount} topics weighted by importance`}
+        />
+        <Stat
+          label="Tasks done"
+          icon={<ListChecks className="h-4 w-4" />}
+          value={`${todaysDone}/${todaysTotal}`}
+          hint={target ? `${Math.round((doneMin / target) * 100)}% of today` : "No tasks today"}
+        />
+        <Stat
+          label="Readiness"
+          icon={<Flame className="h-4 w-4" />}
+          value={`${r.score}`}
+          hint={r.hasQuiz ? "Includes quiz accuracy" : "Take a quiz to refine"}
+        />
+      </div>
+
+      {/* Progress + Readiness ring */}
       <div className="grid gap-5 md:grid-cols-3">
-        <Panel>
-          <PanelTitle>Today's target</PanelTitle>
-          <div className="flex items-baseline gap-2">
-            <span className="font-mono text-3xl font-bold text-foreground">{fmtMin(doneMin)}</span>
-            <span className="text-sm text-muted-foreground">of {fmtMin(target)}</span>
-          </div>
-          <div className="mt-3">
-            <Progress value={target ? (doneMin / target) * 100 : 0} tone="signal" />
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            {target
-              ? `${todays.filter((t) => !t.done).length} task(s) remaining today`
-              : "Nothing scheduled today — generate a plan."}
-          </p>
-        </Panel>
-        <Panel>
-          <PanelTitle>Overall preparation</PanelTitle>
-          <div className="font-mono text-3xl font-bold text-foreground">
-            {Math.round(r.coverage * 100)}%
-          </div>
-          <div className="mt-3">
-            <Progress value={r.coverage * 100} />
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Syllabus covered across {r.topicCount} topics, weighted by importance.
-          </p>
+        <Panel className="md:col-span-2">
+          <PanelTitle
+            action={
+              <Link to="/planner" className="text-xs text-primary hover:underline">
+                Full planner
+              </Link>
+            }
+          >
+            Today's study mission
+          </PanelTitle>
+          {todays.length ? (
+            <>
+              <div className="mb-4">
+                <Progress value={target ? (doneMin / target) * 100 : 0} tone="signal" />
+              </div>
+              <div className="space-y-2">
+                {todays.map((t) => (
+                  <TaskRow key={t.id} task={t} sub={examName(t.examId)} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+              No tasks for today.{" "}
+              <button
+                className="text-primary hover:underline"
+                onClick={() => {
+                  actions.regenerate();
+                  toast.success("Study plan generated");
+                }}
+              >
+                Generate a plan
+              </button>
+            </div>
+          )}
         </Panel>
         <Panel>
           <PanelTitle
@@ -333,9 +416,9 @@ function Overview() {
           >
             Readiness score
           </PanelTitle>
-          <div className="flex items-center gap-4">
-            <Ring value={r.score} size={96} />
-            <div className="text-xs text-muted-foreground">
+          <div className="flex flex-col items-center gap-3">
+            <Ring value={r.score} size={120} label="readiness" />
+            <div className="text-center text-xs text-muted-foreground">
               {showCalc ? (
                 <p>
                   {r.hasQuiz
@@ -355,39 +438,9 @@ function Overview() {
         </Panel>
       </div>
 
+      {/* Priority topics + Quick actions */}
       <div className="grid gap-5 lg:grid-cols-5">
         <Panel className="lg:col-span-3">
-          <PanelTitle
-            action={
-              <Link to="/planner" className="text-xs text-primary hover:underline">
-                Full planner
-              </Link>
-            }
-          >
-            Today's study plan
-          </PanelTitle>
-          {todays.length ? (
-            <div className="space-y-2">
-              {todays.map((t) => (
-                <TaskRow key={t.id} task={t} sub={examName(t.examId)} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-              No tasks for today.{" "}
-              <button
-                className="text-primary hover:underline"
-                onClick={() => {
-                  actions.regenerate();
-                  toast.success("Study plan generated");
-                }}
-              >
-                Generate a plan
-              </button>
-            </div>
-          )}
-        </Panel>
-        <Panel className="lg:col-span-2">
           <PanelTitle
             action={
               <Link to="/topics" className="text-xs text-primary hover:underline">
@@ -395,15 +448,15 @@ function Overview() {
               </Link>
             }
           >
-            Study next
+            Study next — priority topics
           </PanelTitle>
           <div className="space-y-3">
             {top.map(({ topic, exam, info, minutes }, i) => (
               <div
                 key={topic.id}
-                className="flex items-start gap-3 rounded-lg bg-surface p-3 transition hover:bg-accent"
+                className="flex items-start gap-3 rounded-xl border bg-surface p-3 transition hover:border-primary/40 hover:shadow-sm"
               >
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/15 font-mono text-xs font-bold text-primary">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.70_0.15_285)] font-mono text-sm font-bold text-primary-foreground">
                   {i + 1}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -418,16 +471,39 @@ function Overview() {
               </div>
             ))}
             {!top.length && (
-              <p className="text-sm text-muted-foreground">Every topic is revised. Great work!</p>
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Every topic is revised. Great work!
+              </p>
             )}
+          </div>
+        </Panel>
+        <Panel className="lg:col-span-2">
+          <PanelTitle>Quick actions</PanelTitle>
+          <div className="grid grid-cols-2 gap-3">
+            {QUICK_ACTIONS.map(({ icon: Icon, label, sub, to }) => (
+              <Link
+                key={label}
+                to={to}
+                className="group flex flex-col gap-2 rounded-xl border bg-card p-3 transition hover:border-primary/40 hover:shadow-sm"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary transition group-hover:scale-110 group-hover:bg-primary/15">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-foreground">{label}</div>
+                  <div className="text-[11px] text-muted-foreground">{sub}</div>
+                </div>
+              </Link>
+            ))}
           </div>
         </Panel>
       </div>
 
+      {/* Weekly consistency chart */}
       <Panel>
         <PanelTitle
           action={
-            <span className="flex items-center gap-1 text-xs text-signal">
+            <span className="flex items-center gap-1 text-xs font-semibold text-signal">
               <Flame className="h-3.5 w-3.5" />
               {week.filter((d) => d.minutes > 0).length}/7 active days
             </span>
