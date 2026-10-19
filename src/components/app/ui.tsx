@@ -8,16 +8,29 @@ const btn = {
   signal: "bg-signal text-signal-foreground hover:brightness-110 shadow-sm hover:shadow-md",
   outline: "border border-input bg-card text-foreground hover:bg-surface hover:border-primary/40",
   ghost: "text-muted-foreground hover:bg-surface hover:text-foreground",
-  danger: "border border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive/50",
+  danger:
+    "border border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive/50",
 };
 
-export function Button({ variant = "primary", size = "md", className, ...p }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof btn; size?: "sm" | "md" | "lg" }) {
+export function Button({
+  variant = "primary",
+  size = "md",
+  className,
+  ...p
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: keyof typeof btn;
+  size?: "sm" | "md" | "lg";
+}) {
   return (
     <button
       {...p}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
-        size === "sm" ? "h-8 px-3 text-xs" : size === "lg" ? "h-12 px-6 text-sm" : "h-10 px-4 text-sm",
+        size === "sm"
+          ? "h-8 px-3 text-xs"
+          : size === "lg"
+            ? "h-12 px-6 text-sm"
+            : "h-10 px-4 text-sm",
         btn[variant],
         className,
       )}
@@ -32,7 +45,9 @@ export function Panel({ className, children }: { className?: string; children: R
 export function PanelTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="mb-4 flex items-center justify-between gap-2">
-      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{children}</h3>
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+        {children}
+      </h3>
       {action}
     </div>
   );
@@ -45,44 +60,119 @@ const tones = {
   red: "bg-destructive/10 text-destructive border-destructive/20",
   muted: "bg-muted text-muted-foreground border-border",
 };
-export function Badge({ tone = "muted", children }: { tone?: keyof typeof tones; children: ReactNode }) {
-  return <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap", tones[tone])}>{children}</span>;
+export function Badge({
+  tone = "muted",
+  children,
+}: {
+  tone?: keyof typeof tones;
+  children: ReactNode;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap",
+        tones[tone],
+      )}
+    >
+      {children}
+    </span>
+  );
 }
 export const PriorityBadge = ({ level }: { level: PriorityLevel }) => (
-  <Badge tone={level === "High" ? "red" : level === "Medium" ? "amber" : "muted"}>{level} priority</Badge>
+  <Badge tone={level === "High" ? "red" : level === "Medium" ? "amber" : "muted"}>
+    {level} priority
+  </Badge>
 );
 export const StatusBadge = ({ status }: { status: Status }) => (
-  <Badge tone={status === "Revised" ? "lime" : status === "Learning" ? "violet" : "muted"}>{status}</Badge>
+  <Badge tone={status === "Revised" ? "lime" : status === "Learning" ? "violet" : "muted"}>
+    {status}
+  </Badge>
 );
 
-export function Progress({ value, tone = "primary" }: { value: number; tone?: "primary" | "signal" | "warning" }) {
+export function Progress({
+  value,
+  tone = "primary",
+}: {
+  value: number;
+  tone?: "primary" | "signal" | "warning";
+}) {
   const c = tone === "signal" ? "bg-signal" : tone === "warning" ? "bg-warning" : "bg-primary";
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-      <div className={cn("h-full rounded-full transition-all duration-700", c)} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
+      <div
+        className={cn("h-full rounded-full transition-all duration-700", c)}
+        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+      />
     </div>
   );
 }
 
-export function Ring({ value, size = 120, label, hero = false }: { value: number; size?: number; label?: string; hero?: boolean }) {
+export function Ring({
+  value,
+  size = 120,
+  label,
+  hero = false,
+}: {
+  value: number;
+  size?: number;
+  label?: string;
+  hero?: boolean;
+}) {
   const r = (size - 12) / 2;
   const c = 2 * Math.PI * r;
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={10} className="fill-none stroke-muted" />
-        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={10} strokeLinecap="round" className="fill-none stroke-primary transition-all duration-1000"
-          strokeDasharray={c} strokeDashoffset={c * (1 - value / 100)} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          strokeWidth={10}
+          className="fill-none stroke-muted"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          strokeWidth={10}
+          strokeLinecap="round"
+          className="fill-none stroke-primary transition-all duration-1000"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - value / 100)}
+        />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={cn("font-mono text-3xl font-bold", hero ? "text-white" : "text-foreground")}>{value}</span>
-        {label && <span className={cn("text-[10px] uppercase tracking-wider", hero ? "text-white/70" : "text-muted-foreground")}>{label}</span>}
+        <span
+          className={cn("font-mono text-3xl font-bold", hero ? "text-white" : "text-foreground")}
+        >
+          {value}
+        </span>
+        {label && (
+          <span
+            className={cn(
+              "text-[10px] uppercase tracking-wider",
+              hero ? "text-white/70" : "text-muted-foreground",
+            )}
+          >
+            {label}
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
-export function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+}) {
   useEffect(() => {
     const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", h);
@@ -94,7 +184,13 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
       <div className="panel max-h-[92vh] w-full max-w-2xl overflow-y-auto p-6 shadow-xl animate-in slide-in-from-bottom-4">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-          <button onClick={onClose} className="rounded-md p-1 text-muted-foreground transition hover:bg-surface hover:text-foreground" aria-label="Close"><X className="h-5 w-5" /></button>
+          <button
+            onClick={onClose}
+            className="rounded-md p-1 text-muted-foreground transition hover:bg-surface hover:text-foreground"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
         {children}
       </div>
@@ -102,9 +198,18 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
   );
 }
 
-export const inputCls = "h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
+export const inputCls =
+  "h-10 w-full rounded-lg border border-input bg-card px-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 
-export function Field({ label, error, children }: { label: string; error?: string | undefined; children: ReactNode }) {
+export function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string | undefined;
+  children: ReactNode;
+}) {
   return (
     <label className="block space-y-1.5">
       <span className="text-xs font-semibold text-muted-foreground">{label}</span>
@@ -114,7 +219,15 @@ export function Field({ label, error, children }: { label: string; error?: strin
   );
 }
 
-export function PageHeader({ title, sub, action }: { title: string; sub?: string | undefined; action?: ReactNode }) {
+export function PageHeader({
+  title,
+  sub,
+  action,
+}: {
+  title: string;
+  sub?: string | undefined;
+  action?: ReactNode;
+}) {
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -126,18 +239,45 @@ export function PageHeader({ title, sub, action }: { title: string; sub?: string
   );
 }
 
-export function EmptyState({ icon, title, text, action }: { icon: ReactNode; title: string; text: string; action?: ReactNode }) {
+export function EmptyState({
+  icon,
+  title,
+  text,
+  action,
+}: {
+  icon: ReactNode;
+  title: string;
+  text: string;
+  action?: ReactNode;
+}) {
   return (
     <div className="panel flex flex-col items-center px-6 py-14 text-center bg-hero">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/20 text-primary">{icon}</div>
-      <h3 className="text-lg font-semibold text-foreground" style={{ color: "var(--gradient-hero-text)" }}>{title}</h3>
-      <p className="mt-1 max-w-sm text-sm" style={{ color: "var(--gradient-hero-muted)" }}>{text}</p>
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/20 text-primary">
+        {icon}
+      </div>
+      <h3
+        className="text-lg font-semibold text-foreground"
+        style={{ color: "var(--gradient-hero-text)" }}
+      >
+        {title}
+      </h3>
+      <p className="mt-1 max-w-sm text-sm" style={{ color: "var(--gradient-hero-muted)" }}>
+        {text}
+      </p>
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
 
-export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
+export function Stat({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: ReactNode;
+  hint?: ReactNode;
+}) {
   return (
     <div className="panel p-4 shadow-sm">
       <div className="text-xs font-semibold text-muted-foreground">{label}</div>

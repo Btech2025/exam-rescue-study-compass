@@ -51,7 +51,7 @@ export interface QuizResult {
 }
 
 export interface AppState {
-  intelligence?: import('./intelligence').Intelligence;
+  intelligence?: import("./intelligence").Intelligence;
   exams: Exam[];
   plan: Plan | null;
   quizzes: QuizResult[];

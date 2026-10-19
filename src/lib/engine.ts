@@ -57,7 +57,12 @@ export const upcomingExams = (exams: Exam[], today: string) =>
 export function rankedTopics(exams: Exam[], today: string) {
   return upcomingExams(exams, today)
     .flatMap((exam) =>
-      exam.topics.map((topic) => ({ exam, topic, info: topicPriority(topic, exam, today), minutes: estimateMinutes(topic) })),
+      exam.topics.map((topic) => ({
+        exam,
+        topic,
+        info: topicPriority(topic, exam, today),
+        minutes: estimateMinutes(topic),
+      })),
     )
     .sort((a, b) => b.info.score - a.info.score);
 }
@@ -67,7 +72,10 @@ const capacity = (exams: Exam[], day: string) =>
 
 function place(chunks: Task[], exams: Exam[], start: string, used: Record<string, number>) {
   const deadline: Record<string, string> = Object.fromEntries(exams.map((e) => [e.id, e.date]));
-  const sorted = [...chunks].sort((a, b) => b.score - a.score || (deadline[a.examId] ?? "").localeCompare(deadline[b.examId] ?? ""));
+  const sorted = [...chunks].sort(
+    (a, b) =>
+      b.score - a.score || (deadline[a.examId] ?? "").localeCompare(deadline[b.examId] ?? ""),
+  );
   const placed: Task[] = [];
   const overflow: Task[] = [];
   for (const c of sorted) {
@@ -91,7 +99,8 @@ function place(chunks: Task[], exams: Exam[], start: string, used: Record<string
 
 function chunksFor(exam: Exam, topic: Topic, minutes: number, today: string): Task[] {
   const info = topicPriority(topic, exam, today);
-  const kind: TaskKind = topic.status === "Not Started" ? "learn" : topic.status === "Learning" ? "deepen" : "revise";
+  const kind: TaskKind =
+    topic.status === "Not Started" ? "learn" : topic.status === "Learning" ? "deepen" : "revise";
   const verb = { learn: "Learn", deepen: "Deepen", revise: "Revise" }[kind];
   const n = Math.ceil(minutes / 90);
   const each = Math.max(15, Math.round(minutes / n / 15) * 15);
@@ -114,7 +123,8 @@ export function generatePlan(exams: Exam[], prev: Plan | null, today: string): P
   const doneMin: Record<string, number> = {};
   const used: Record<string, number> = {};
   for (const t of kept) {
-    if (prev && t.completedAt && t.completedAt >= prev.generatedAt) doneMin[t.topicId] = (doneMin[t.topicId] ?? 0) + t.minutes;
+    if (prev && t.completedAt && t.completedAt >= prev.generatedAt)
+      doneMin[t.topicId] = (doneMin[t.topicId] ?? 0) + t.minutes;
     if (t.date >= today) used[t.date] = (used[t.date] ?? 0) + t.minutes;
   }
   const chunks: Task[] = [];
@@ -129,9 +139,10 @@ export function generatePlan(exams: Exam[], prev: Plan | null, today: string): P
 }
 
 export function recoverPlan(exams: Exam[], plan: Plan, today: string) {
-  const missed = [...plan.tasks.filter((t) => !t.done && t.date < today), ...plan.unscheduled].filter((t) =>
-    exams.some((e) => e.id === t.examId && e.date > today),
-  );
+  const missed = [
+    ...plan.tasks.filter((t) => !t.done && t.date < today),
+    ...plan.unscheduled,
+  ].filter((t) => exams.some((e) => e.id === t.examId && e.date > today));
   const rest = plan.tasks.filter((t) => t.done || t.date >= today);
   const used: Record<string, number> = {};
   for (const t of rest) if (t.date >= today) used[t.date] = (used[t.date] ?? 0) + t.minutes;
@@ -158,7 +169,15 @@ export function readiness(state: AppState, today: string) {
   const score = hasQuiz
     ? 0.45 * coverage + 0.2 * revision + 0.2 * quiz + 0.15 * taskRate
     : 0.55 * coverage + 0.25 * revision + 0.2 * taskRate;
-  return { score: Math.round(score * 100), coverage, revision, quiz, taskRate, hasQuiz, topicCount: topics.length };
+  return {
+    score: Math.round(score * 100),
+    coverage,
+    revision,
+    quiz,
+    taskRate,
+    hasQuiz,
+    topicCount: topics.length,
+  };
 }
 
 export function topicQuizAccuracy(state: AppState) {
@@ -166,7 +185,10 @@ export function topicQuizAccuracy(state: AppState) {
   for (const q of state.quizzes)
     for (const [k, v] of Object.entries(q.perTopic)) {
       const key = k.toLowerCase();
-      acc[key] = { correct: (acc[key]?.correct ?? 0) + v.correct, total: (acc[key]?.total ?? 0) + v.total };
+      acc[key] = {
+        correct: (acc[key]?.correct ?? 0) + v.correct,
+        total: (acc[key]?.total ?? 0) + v.total,
+      };
     }
   return acc;
 }
@@ -174,7 +196,9 @@ export function topicQuizAccuracy(state: AppState) {
 export function weeklyMinutes(state: AppState, today: string) {
   return Array.from({ length: 7 }, (_, i) => {
     const day = addDays(today, i - 6);
-    const minutes = (state.plan?.tasks ?? []).filter((t) => t.done && t.completedAt === day).reduce((s, t) => s + t.minutes, 0);
+    const minutes = (state.plan?.tasks ?? [])
+      .filter((t) => t.done && t.completedAt === day)
+      .reduce((s, t) => s + t.minutes, 0);
     return { day: parseISO(day).toLocaleDateString(undefined, { weekday: "short" }), minutes };
   });
 }

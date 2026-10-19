@@ -3,16 +3,39 @@ import { rescueAnalysis, rescueExams } from "@/lib/rescue";
 import type { AppState, Topic } from "@/lib/types";
 
 const now = new Date("2026-10-17T12:00:00");
-const topic = (id: string, overrides: Partial<Topic> = {}): Topic => ({ id, name: id, difficulty: "Hard", importance: "High", status: "Not Started", ...overrides });
+const topic = (id: string, overrides: Partial<Topic> = {}): Topic => ({
+  id,
+  name: id,
+  difficulty: "Hard",
+  importance: "High",
+  status: "Not Started",
+  ...overrides,
+});
 const state = (topics: Topic[], hoursPerDay = 3, date = "2026-10-20"): AppState => ({
   exams: [{ id: "exam", name: "Final", subject: "Data Structures", date, hoursPerDay, topics }],
-  plan: null, quizzes: [], settings: { name: "Student" },
+  plan: null,
+  quizzes: [],
+  settings: { name: "Student" },
 });
 
 describe("Rescue Mode", () => {
   it("returns the three highest-value topics with transparent quiz bonuses", () => {
-    const s = state([topic("weak"), topic("hard"), topic("medium", { difficulty: "Medium" }), topic("easy", { difficulty: "Easy", importance: "Low" })]);
-    s.quizzes = [{ id: "quiz", date: "2026-10-17", subject: "Data Structures", score: 0, total: 1, perTopic: { weak: { correct: 0, total: 1 } } }];
+    const s = state([
+      topic("weak"),
+      topic("hard"),
+      topic("medium", { difficulty: "Medium" }),
+      topic("easy", { difficulty: "Easy", importance: "Low" }),
+    ]);
+    s.quizzes = [
+      {
+        id: "quiz",
+        date: "2026-10-17",
+        subject: "Data Structures",
+        score: 0,
+        total: 1,
+        perTopic: { weak: { correct: 0, total: 1 } },
+      },
+    ];
     const r = rescueAnalysis(s, undefined, now);
     expect(r?.top3.map((t) => t.topic.id)).toEqual(["weak", "hard", "medium"]);
     expect(r?.top3[0]?.quizBonus).toBe(6);
@@ -31,7 +54,16 @@ describe("Rescue Mode", () => {
   it("brings a revised topic back when saved quiz accuracy is below 80 percent", () => {
     const s = state([topic("weak", { status: "Revised" })]);
     expect(rescueAnalysis(s, undefined, now)?.ranked).toEqual([]);
-    s.quizzes = [{ id: "quiz", date: "2026-10-17", subject: "Data Structures", score: 3, total: 5, perTopic: { weak: { correct: 3, total: 5 } } }];
+    s.quizzes = [
+      {
+        id: "quiz",
+        date: "2026-10-17",
+        subject: "Data Structures",
+        score: 3,
+        total: 5,
+        perTopic: { weak: { correct: 3, total: 5 } },
+      },
+    ];
     expect(rescueAnalysis(s, undefined, now)?.ranked[0]?.quizBonus).toBe(3);
     const weak = s.quizzes[0]?.perTopic["weak"];
     if (!weak) throw new Error("Missing quiz result");
@@ -44,13 +76,18 @@ describe("Rescue Mode", () => {
     expect(r?.days.length).toBeGreaterThan(0);
     for (const day of r?.days ?? []) {
       day.sessions.forEach((session, i) => {
-        if (session.kind === "focus" && day.sessions[i + 1]) expect(day.sessions[i + 1]?.kind).toBe("break");
+        if (session.kind === "focus" && day.sessions[i + 1])
+          expect(day.sessions[i + 1]?.kind).toBe("break");
       });
     }
   });
 
   it("counts breaks and practice within daily hours and reports uncovered work", () => {
-    const r = rescueAnalysis(state([topic("Graphs"), topic("Trees"), topic("Hashing")], 0.5, "2026-10-18"), undefined, now);
+    const r = rescueAnalysis(
+      state([topic("Graphs"), topic("Trees"), topic("Hashing")], 0.5, "2026-10-18"),
+      undefined,
+      now,
+    );
     expect(r?.availableMin).toBe(30);
     expect(r?.partial[0]).toEqual({ name: "Graphs", doneMin: 30, needMin: 195 });
     expect(r?.dropped.map((t) => t.topic.id)).toEqual(["Trees", "Hashing"]);
@@ -64,12 +101,35 @@ describe("Rescue Mode", () => {
     }
     const complete = rescueAnalysis(state([topic("Graphs")]), undefined, now);
     expect(complete?.covered).toEqual(["Graphs"]);
-    expect(complete?.days.flatMap((d) => d.sessions).filter((s) => s.kind === "practice").map((s) => s.minutes)).toEqual([15]);
+    expect(
+      complete?.days
+        .flatMap((d) => d.sessions)
+        .filter((s) => s.kind === "practice")
+        .map((s) => s.minutes),
+    ).toEqual([15]);
   });
 
   it("subtracts completed minutes from today's limit and stops at 11pm", () => {
     const s = state([topic("Graphs")], 3, "2026-10-18");
-    s.plan = { generatedAt: "2026-10-17", unscheduled: [], tasks: [{ id: "task", examId: "exam", topicId: "Graphs", title: "Study", date: "2026-10-17", minutes: 60, priority: "High", score: 20, kind: "learn", done: true, completedAt: "2026-10-17" }] };
+    s.plan = {
+      generatedAt: "2026-10-17",
+      unscheduled: [],
+      tasks: [
+        {
+          id: "task",
+          examId: "exam",
+          topicId: "Graphs",
+          title: "Study",
+          date: "2026-10-17",
+          minutes: 60,
+          priority: "High",
+          score: 20,
+          kind: "learn",
+          done: true,
+          completedAt: "2026-10-17",
+        },
+      ],
+    };
     expect(rescueAnalysis(s, undefined, now)?.availableMin).toBe(120);
     expect(rescueAnalysis(s, undefined, new Date("2026-10-17T22:40:00"))?.availableMin).toBe(20);
     expect(rescueAnalysis(s, undefined, new Date("2026-10-17T23:00:00"))?.availableMin).toBe(0);
