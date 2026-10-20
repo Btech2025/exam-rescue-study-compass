@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Target, XCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, Target, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -127,22 +127,28 @@ function Practice() {
         </Panel>
         <Panel>
           <PanelTitle>Recommended next steps</PanelTitle>
-          <ul className="space-y-1.5 text-sm text-muted-foreground">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             {weak.length ? (
               weak.map((w) => (
-                <li key={w}>
-                  • Revisit <span className="text-foreground">{w}</span> — review notes, then retry
-                  questions on it.
+                <li key={w} className="flex gap-2.5 rounded-lg bg-surface px-3 py-2">
+                  <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>
+                    Revisit <span className="font-medium text-foreground">{w}</span> — review notes,
+                    then retry questions on it.
+                  </span>
                 </li>
               ))
             ) : (
-              <li>
-                • Strong round! Mark these topics as Revised in the planner and move on to the next
-                priority.
+              <li className="flex gap-2.5 rounded-lg bg-surface px-3 py-2">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-signal" />
+                <span>
+                  Strong round! Mark these topics as Revised in the planner and move on to the next
+                  priority.
+                </span>
               </li>
             )}
           </ul>
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             <Button onClick={start}>Retry</Button>
             <Link to="/readiness">
               <Button variant="outline">View readiness</Button>
@@ -157,24 +163,24 @@ function Practice() {
     const q = qs[i]!;
     return (
       <div className="mx-auto max-w-2xl space-y-5">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>
+        <div className="flex items-center justify-between text-sm">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             Question {i + 1} of {qs.length}
           </span>
           <Badge tone="violet">{q.topic}</Badge>
         </div>
         <Progress value={(i / qs.length) * 100} />
-        <Panel>
-          <h2 className="text-lg font-semibold leading-snug">{q.q}</h2>
+        <Panel className="animate-card">
+          <h2 className="text-lg font-bold leading-snug text-foreground">{q.q}</h2>
           <div className="mt-5 space-y-2">
             {q.options.map((o, k) => {
               const state =
                 picked === null
                   ? ""
                   : k === q.answer
-                    ? "border-signal bg-signal/10"
+                    ? "border-signal bg-signal/10 ring-1 ring-signal/30"
                     : k === picked
-                      ? "border-destructive bg-destructive/10"
+                      ? "border-destructive bg-destructive/10 ring-1 ring-destructive/30"
                       : "opacity-50";
               return (
                 <button
@@ -182,19 +188,19 @@ function Practice() {
                   disabled={picked !== null}
                   onClick={() => setPicked(k)}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-lg border bg-card p-3 text-left text-sm transition hover:border-primary/50",
+                    "flex w-full items-center gap-3 rounded-xl border bg-card p-3.5 text-left text-sm transition hover:border-primary/50 hover:shadow-sm active:scale-[0.99]",
                     state,
                   )}
                 >
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted font-mono text-xs">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted font-mono text-xs font-bold">
                     {"ABCD"[k]}
                   </span>
-                  {o}
+                  <span className="flex-1 text-foreground">{o}</span>
                   {picked !== null && k === q.answer && (
-                    <CheckCircle2 className="ml-auto h-4 w-4 text-signal" />
+                    <CheckCircle2 className="ml-auto h-5 w-5 text-signal" />
                   )}
                   {picked === k && k !== q.answer && (
-                    <XCircle className="ml-auto h-4 w-4 text-destructive" />
+                    <XCircle className="ml-auto h-5 w-5 text-destructive" />
                   )}
                 </button>
               );

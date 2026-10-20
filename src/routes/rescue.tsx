@@ -86,23 +86,31 @@ function TopicCard({
   isTop: boolean;
   setStatus: (id: string, name: string, st: Status) => void;
 }) {
+  const revised = t.topic.status === "Revised";
   return (
     <Panel
       className={cn(
-        "animate-card relative flex flex-col transition hover:shadow-md",
+        "animate-card relative flex flex-col overflow-hidden transition hover:shadow-md",
         isTop && "border-primary/40 shadow-sm glow-primary",
+        revised && "border-signal/40",
       )}
       style={{ animationDelay: `${(rank - 1) * 100}ms` }}
     >
+      <div
+        className={cn(
+          "absolute inset-x-0 top-0 h-1",
+          isTop ? "bg-gradient-to-r from-primary to-[oklch(0.70_0.15_285)]" : "bg-muted-foreground/20",
+        )}
+      />
       {isTop && (
-        <div className="absolute -top-3 left-4 flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
+        <div className="absolute -top-0 right-4 flex items-center gap-1 rounded-b-md bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground shadow-md">
           <Sparkles className="h-3 w-3" /> Study first
         </div>
       )}
-      <div className="flex items-start justify-between gap-2 pt-1">
+      <div className="flex items-start justify-between gap-2 pt-3">
         <span
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-xl font-mono text-lg font-bold transition",
+            "flex h-11 w-11 items-center justify-center rounded-xl font-mono text-lg font-bold transition",
             isTop
               ? "bg-gradient-to-br from-primary to-[oklch(0.70_0.15_285)] text-primary-foreground shadow-md"
               : "bg-primary/10 text-primary",
@@ -111,13 +119,13 @@ function TopicCard({
           {rank}
         </span>
         <div className="text-right">
-          <div className="font-mono text-xl font-bold text-foreground">{t.value}</div>
+          <div className="font-mono text-2xl font-bold text-foreground">{t.value}</div>
           <div className="text-[10px] font-semibold uppercase text-muted-foreground">
             value score
           </div>
         </div>
       </div>
-      <h3 className="mt-3 text-lg font-semibold text-foreground">{t.topic.name}</h3>
+      <h3 className="mt-3 text-lg font-bold text-foreground">{t.topic.name}</h3>
       <div className="mt-2 flex flex-wrap gap-1.5">
         <StatusBadge status={t.topic.status} />
         <Badge>{t.topic.difficulty}</Badge>
@@ -140,7 +148,7 @@ function TopicCard({
       <p className="mt-3 font-mono text-[11px] text-muted-foreground">
         priority {t.base} {t.quizBonus >= 0 ? "+" : "−"} quiz {Math.abs(t.quizBonus)} = {t.value}
       </p>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-4 flex gap-2">
         {t.topic.status === "Not Started" && (
           <Button
             size="sm"
@@ -152,10 +160,17 @@ function TopicCard({
         )}
         <Button
           size="sm"
-          variant={isTop ? "signal" : "outline"}
+          variant={revised ? "signal" : isTop ? "signal" : "outline"}
           onClick={() => setStatus(t.topic.id, t.topic.name, "Revised")}
+          className={cn(revised && "ring-2 ring-signal/30")}
         >
-          Mark revised
+          {revised ? (
+            <>
+              <CheckCircle2 className="h-3.5 w-3.5" /> Revised
+            </>
+          ) : (
+            "Mark revised"
+          )}
         </Button>
       </div>
     </Panel>

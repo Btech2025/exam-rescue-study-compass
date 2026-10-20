@@ -15,6 +15,7 @@ import { TaskRow } from "@/components/app/TaskRow";
 import { fmtDay, fmtMin, todayISO, upcomingExams } from "@/lib/engine";
 import { actions, useAppState } from "@/lib/store";
 import type { Status, Task } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/planner")({
   head: () => ({
@@ -151,12 +152,28 @@ function Planner() {
             const list = future.filter((t) => t.date === d);
             const used = list.reduce((a, t) => a + t.minutes, 0);
             const c = cap(d);
+            const isToday = d === today;
+            const dayDone = list.filter((t) => t.done).length;
             return (
-              <Panel key={d}>
+              <Panel key={d} className={cn(isToday && "border-primary/30 shadow-sm")}>
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="font-semibold">{d === today ? "Today" : fmtDay(d)}</h3>
+                  <div className="flex items-center gap-2">
+                    {isToday ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-[oklch(0.70_0.15_285)] px-3 py-1 text-xs font-bold text-primary-foreground shadow-sm">
+                        Today
+                      </span>
+                    ) : (
+                      <h3 className="font-semibold text-foreground">{fmtDay(d)}</h3>
+                    )}
+                    {dayDone === list.length && list.length > 0 && (
+                      <span className="text-xs font-semibold text-signal">All done</span>
+                    )}
+                  </div>
                   <span
-                    className={`font-mono text-xs ${used > c ? "text-destructive" : "text-muted-foreground"}`}
+                    className={cn(
+                      "font-mono text-xs",
+                      used > c ? "text-destructive" : "text-muted-foreground",
+                    )}
                   >
                     {fmtMin(used)} / {fmtMin(c)}
                   </span>
@@ -172,8 +189,10 @@ function Planner() {
                   />
                 </div>
                 <div className="space-y-2">
-                  {list.map((t) => (
-                    <TaskRow key={t.id} task={t} sub={subj(t)} />
+                  {list.map((t, i) => (
+                    <div key={t.id} className="animate-list" style={{ animationDelay: `${Math.min(i, 6) * 40}ms` }}>
+                      <TaskRow task={t} sub={subj(t)} />
+                    </div>
                   ))}
                 </div>
               </Panel>

@@ -117,60 +117,62 @@ function Readiness() {
         </div>
       </div>
       <div className="grid gap-5 md:grid-cols-3">
-        <Panel>
+        <Panel className="border-signal/20">
           <PanelTitle>Strong areas</PanelTitle>
-          <ul className="space-y-1.5 text-sm">
+          <ul className="space-y-2 text-sm">
             {strong.slice(0, 6).map((x) => (
-              <li key={x.topic.id} className="flex justify-between gap-2">
-                <span className="truncate">{x.topic.name}</span>
-                <span className="text-xs text-signal">
+              <li key={x.topic.id} className="flex items-center justify-between gap-2 rounded-lg bg-signal/[0.04] px-2.5 py-1.5">
+                <span className="truncate text-foreground">{x.topic.name}</span>
+                <span className="shrink-0 text-xs font-semibold text-signal">
                   {x.topic.status === "Revised" ? "Revised" : "Quiz ≥80%"}
                 </span>
               </li>
             ))}
-            {!strong.length && <li className="text-muted-foreground">None yet — keep going.</li>}
+            {!strong.length && <li className="py-2 text-center text-muted-foreground">None yet — keep going.</li>}
           </ul>
         </Panel>
-        <Panel>
+        <Panel className="border-warning/20">
           <PanelTitle>Weak areas</PanelTitle>
-          <ul className="space-y-1.5 text-sm">
+          <ul className="space-y-2 text-sm">
             {weak.slice(0, 6).map((x) => (
-              <li key={x.topic.id} className="flex justify-between gap-2">
-                <span className="truncate">{x.topic.name}</span>
-                <span className="text-xs text-warning">
+              <li key={x.topic.id} className="flex items-center justify-between gap-2 rounded-lg bg-warning/[0.05] px-2.5 py-1.5">
+                <span className="truncate text-foreground">{x.topic.name}</span>
+                <span className="shrink-0 text-xs font-semibold text-warning">
                   {qa(x.topic.name)
                     ? `Quiz ${qa(x.topic.name)?.correct}/${qa(x.topic.name)?.total}`
                     : "Not started"}
                 </span>
               </li>
             ))}
-            {!weak.length && <li className="text-muted-foreground">No weak areas detected.</li>}
+            {!weak.length && <li className="py-2 text-center text-muted-foreground">No weak areas detected.</li>}
           </ul>
         </Panel>
         <Panel className="border-destructive/30">
           <PanelTitle>Urgent attention</PanelTitle>
           <ul className="space-y-2 text-sm">
             {urgent.map((x) => (
-              <li key={x.topic.id} className="flex items-center justify-between gap-2">
-                <span className="truncate">{x.topic.name}</span>
+              <li key={x.topic.id} className="flex items-center justify-between gap-2 rounded-lg bg-destructive/[0.04] px-2.5 py-1.5">
+                <span className="truncate text-foreground">{x.topic.name}</span>
                 <PriorityBadge level={x.info.level} />
               </li>
             ))}
-            {!urgent.length && <li className="text-muted-foreground">Nothing urgent.</li>}
+            {!urgent.length && <li className="py-2 text-center text-muted-foreground">Nothing urgent.</li>}
           </ul>
         </Panel>
       </div>
       <Panel>
         <PanelTitle>Next study session</PanelTitle>
-        <ol className="space-y-2 text-sm">
+        <ol className="space-y-3 text-sm">
           {recs.map((t, k) => (
-            <li key={k} className="flex gap-3">
-              <span className="font-mono text-primary">{k + 1}.</span>
-              {t}
+            <li key={k} className="flex gap-3 rounded-lg bg-surface px-3 py-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 font-mono text-xs font-bold text-primary">
+                {k + 1}
+              </span>
+              <span className="text-foreground">{t}</span>
             </li>
           ))}
         </ol>
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           <Link to="/planner">
             <Button>Open planner</Button>
           </Link>

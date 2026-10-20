@@ -13,6 +13,7 @@ import {
 } from "@/components/app/ui";
 import { fmtMin, rankedTopics, todayISO } from "@/lib/engine";
 import { useAppState } from "@/lib/store";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/topics")({
   head: () => ({
@@ -105,32 +106,53 @@ function Topics() {
         </select>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {list.map(({ topic, exam, info, minutes }) => (
-          <Panel key={topic.id} className="transition hover:border-primary/40">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <h3 className="truncate font-semibold">{topic.name}</h3>
-                <p className="text-xs text-muted-foreground">{exam.subject}</p>
+        {list.map(({ topic, exam, info, minutes }, i) => (
+          <Panel
+            key={topic.id}
+            className="animate-list relative overflow-hidden transition hover:border-primary/40 hover:shadow-md"
+            style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
+          >
+            <div
+              className={cn(
+                "absolute left-0 top-0 h-full w-1",
+                info.level === "High"
+                  ? "bg-destructive"
+                  : info.level === "Medium"
+                    ? "bg-warning"
+                    : "bg-muted-foreground/40",
+              )}
+            />
+            <div className="flex items-start justify-between gap-2 pl-2">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 font-mono text-sm font-bold text-primary">
+                  {i + 1}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="truncate font-semibold text-foreground">{topic.name}</h3>
+                  <p className="text-xs text-muted-foreground">{exam.subject}</p>
+                </div>
               </div>
               <div className="text-right">
                 <div className="font-mono text-2xl font-bold text-primary">{info.score}</div>
                 <div className="text-[10px] text-muted-foreground">/ 29</div>
               </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-3 flex flex-wrap gap-1.5 pl-2">
               <PriorityBadge level={info.level} />
               <StatusBadge status={topic.status} />
               <Badge>{topic.difficulty}</Badge>
-              <Badge>{topic.importance} importance</Badge>
               <Badge tone="lime">~{fmtMin(minutes)}</Badge>
             </div>
-            <div className="mt-4 rounded-lg border border-border bg-surface p-3">
-              <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="mt-4 rounded-lg border border-border bg-surface p-3 pl-2">
+              <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 Why this priority
               </div>
-              <ul className="space-y-0.5 text-xs text-muted-foreground">
+              <ul className="space-y-1 text-xs text-muted-foreground">
                 {info.reasons.map((r) => (
-                  <li key={r}>• {r}</li>
+                  <li key={r} className="flex gap-1.5">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                    <span>{r}</span>
+                  </li>
                 ))}
               </ul>
             </div>

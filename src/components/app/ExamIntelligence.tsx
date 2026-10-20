@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
+  AlertTriangle,
   BookOpenCheck,
   ChevronDown,
   ChevronUp,
@@ -15,7 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge, Button, DropZone, Field, PageHeader, PriorityBadge, SectionHeader, inputCls } from "./ui";
+import { Badge, Button, DropZone, Field, PageHeader, Panel, PriorityBadge, SectionHeader, inputCls } from "./ui";
 import { actions, useAppState } from "@/lib/store";
 import { addDays, fmtDay, fmtMin, todayISO, uid } from "@/lib/engine";
 import {
@@ -487,16 +488,24 @@ export function ExamIntelligence({ research = false }: { research?: boolean }) {
       {/* PYQ Research section */}
       {research && (
         <section className="space-y-4 border-t pt-5">
-          <h2 className="text-lg font-semibold text-foreground">Public question paper resources</h2>
-          <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm">
-            <strong className="text-warning">Live search is not configured</strong>
-            <p className="mt-1 text-muted-foreground">
-              Connect Firecrawl in Lovable → Connectors to enable web research. A Firecrawl
-              connection (managed or your own Firecrawl API key) is required; searches may consume
-              paid credits. No live search has taken place.
-            </p>
+          <SectionHeader
+            icon={<FileSearch className="h-5 w-5" />}
+            title="Public question paper resources"
+            sub="Review real question papers and topic evidence — no fabricated results."
+            tone="warning"
+          />
+          <div className="flex gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm">
+            <AlertTriangle className="h-5 w-5 shrink-0 text-warning" />
+            <div>
+              <p className="font-semibold text-warning">Live search is not configured</p>
+              <p className="mt-1 text-muted-foreground">
+                Connect Firecrawl in Lovable → Connectors to enable web research. A Firecrawl
+                connection (managed or your own Firecrawl API key) is required; searches may consume
+                paid credits. No live search has taken place.
+              </p>
+            </div>
           </div>
-          <Field label="Research query">
+          <Field label="Research query (read-only — shows what would be searched)">
             <input
               readOnly
               className={inputCls}
@@ -513,75 +522,79 @@ export function ExamIntelligence({ research = false }: { research?: boolean }) {
                 .join(" ")}
             />
           </Field>
-          <h3 className="font-semibold text-foreground">Add a real paper for review</h3>
-          <p className="text-xs text-muted-foreground">
-            Use the original source, preferably a university examination portal. User verification
-            is not a claim of official publication.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Paper title">
-              <input
-                className={inputCls}
-                value={paper.title}
-                onChange={(e) => setPaper({ ...paper, title: e.target.value })}
-              />
-            </Field>
-            <Field label="Original source link">
-              <input
-                type="url"
-                className={inputCls}
-                value={paper.url}
-                onChange={(e) => setPaper({ ...paper, url: e.target.value })}
-              />
-            </Field>
-          </div>
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 p-4 text-sm font-medium text-primary transition hover:bg-primary/10 hover:border-primary/50">
-            <Upload className="h-5 w-5" />
-            Upload question paper PDF
-            <input
-              aria-label="Upload question paper PDF"
-              type="file"
-              accept="application/pdf"
-              disabled={busy}
-              onChange={(e) => void upload(e.target.files?.[0], true)}
-              className="hidden"
+          <Panel>
+            <SectionHeader
+              icon={<Plus className="h-5 w-5" />}
+              title="Add a real paper for review"
+              sub="Use the original source, preferably a university examination portal. User verification is not a claim of official publication."
+              tone="muted"
             />
-          </label>
-          <Field label="Retrieved paper text">
-            <textarea
-              className={`${inputCls} h-32 py-3`}
-              value={paper.text}
-              onChange={(e) => setPaper({ ...paper, text: e.target.value, year: "" })}
-            />
-          </Field>
-          <Field label="Year stated in paper">
-            <select
-              className={inputCls}
-              value={paper.year}
-              onChange={(e) => setPaper({ ...paper, year: e.target.value })}
-            >
-              <option value="">Unverified year</option>
-              {paperYears(paper.text).map((y) => (
-                <option key={y}>{y}</option>
-              ))}
-            </select>
-          </Field>
-          <Button disabled={busy} onClick={addPaper}>
-            Add paper for review
-          </Button>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Field label="Paper title">
+                <input
+                  className={inputCls}
+                  value={paper.title}
+                  onChange={(e) => setPaper({ ...paper, title: e.target.value })}
+                />
+              </Field>
+              <Field label="Original source link">
+                <input
+                  type="url"
+                  className={inputCls}
+                  value={paper.url}
+                  onChange={(e) => setPaper({ ...paper, url: e.target.value })}
+                />
+              </Field>
+            </div>
+            <div className="mt-4">
+              <DropZone
+                icon={<Upload className="h-5 w-5" />}
+                title="Upload question paper PDF"
+                hint="PDF only. Originals stay on this device."
+                accept="application/pdf"
+                busy={busy}
+                onFile={(f) => void upload(f, true)}
+              />
+            </div>
+            <div className="mt-4 space-y-3">
+              <Field label="Retrieved paper text">
+                <textarea
+                  className={`${inputCls} h-32 py-3`}
+                  value={paper.text}
+                  onChange={(e) => setPaper({ ...paper, text: e.target.value, year: "" })}
+                />
+              </Field>
+              <Field label="Year stated in paper">
+                <select
+                  className={inputCls}
+                  value={paper.year}
+                  onChange={(e) => setPaper({ ...paper, year: e.target.value })}
+                >
+                  <option value="">Unverified year</option>
+                  {paperYears(paper.text).map((y) => (
+                    <option key={y}>{y}</option>
+                  ))}
+                </select>
+              </Field>
+              <Button disabled={busy} onClick={addPaper}>
+                <Plus className="h-4 w-4" />
+                Add paper for review
+              </Button>
+            </div>
+          </Panel>
           {!draft.papers.length && (
-            <p className="py-4 text-sm text-muted-foreground">
-              No papers retrieved or analyzed yet.
-            </p>
+            <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              No papers retrieved or analyzed yet. Add one above to start building evidence.
+            </div>
           )}
           {draft.papers.map((p) => (
-            <article key={p.id} className="space-y-3 rounded-lg border bg-card p-4 shadow-sm">
-              <div className="flex flex-wrap justify-between gap-2">
+            <article key={p.id} className="animate-list space-y-3 rounded-xl border bg-card p-4 shadow-sm transition hover:shadow-md">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <a
                   href={p.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex min-w-0 items-center gap-2 break-words font-semibold text-primary"
+                  className="flex min-w-0 items-center gap-2 break-words font-semibold text-primary transition hover:underline"
                 >
                   {p.title}
                   <ExternalLink className="h-4 w-4 shrink-0" />
@@ -595,17 +608,19 @@ export function ExamIntelligence({ research = false }: { research?: boolean }) {
                 {p.text.trim() ? "Text available" : "No readable text"}
               </p>
               <details>
-                <summary className="cursor-pointer text-sm text-foreground">Paper text</summary>
-                <pre className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap break-words text-xs">
+                <summary className="cursor-pointer text-sm font-medium text-foreground">Paper text</summary>
+                <pre className="mt-2 max-h-56 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-surface p-3 text-xs">
                   {p.text}
                 </pre>
               </details>
               <p className="text-xs text-muted-foreground">
                 Matched topics:{" "}
-                {draft.topics
-                  .filter((t) => ` ${normalize(p.text)} `.includes(` ${normalize(t.name)} `))
-                  .map((t) => t.name)
-                  .join(", ") || "No exact matches"}
+                <span className="font-medium text-foreground">
+                  {draft.topics
+                    .filter((t) => ` ${normalize(p.text)} `.includes(` ${normalize(t.name)} `))
+                    .map((t) => t.name)
+                    .join(", ") || "No exact matches"}
+                </span>
               </p>
               <div className="flex flex-wrap gap-2">
                 {(["verified", "irrelevant", "pending"] as const).map((review) => (
@@ -650,77 +665,83 @@ export function ExamIntelligence({ research = false }: { research?: boolean }) {
       {/* Topic intelligence and strategy */}
       {rankings.length > 0 && (
         <section className="space-y-4 border-t pt-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-foreground">Important topic intelligence</h2>
-            <Badge tone="lime">{analyzed.length} papers analyzed</Badge>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Year range: {years.length ? `${years[0]}–${years.at(-1)}` : "Not verified"}. Exact
-            wording matches only, not semantic analysis. Priorities with fewer than three reviewed
-            papers are provisional. No prediction of next-exam questions.
-          </p>
+          <SectionHeader
+            icon={<Sparkles className="h-5 w-5" />}
+            title="Important topic intelligence"
+            sub={`Year range: ${years.length ? `${years[0]}–${years.at(-1)}` : "Not verified"}. Exact wording matches only, not semantic analysis. Priorities with fewer than three reviewed papers are provisional.`}
+            action={<Badge tone="lime">{analyzed.length} papers analyzed</Badge>}
+          />
           {rankings.map((r) => (
-            <article key={r.topic.id} className="rounded-lg border bg-card p-4 shadow-sm">
+            <article key={r.topic.id} className="animate-list rounded-xl border bg-card p-4 shadow-sm transition hover:shadow-md">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <label className="flex min-w-0 items-start gap-3">
-                  <input
-                    type="checkbox"
-                    className="mt-1"
+                <div className="flex min-w-0 items-start gap-3">
+                  <CheckToggle
                     checked={chosen.some((n) => normalize(n) === normalize(r.topic.name))}
-                    onChange={(e) =>
+                    onChange={(checked) =>
                       setChosen(
-                        e.target.checked
+                        checked
                           ? [...chosen, r.topic.name]
                           : chosen.filter((n) => normalize(n) !== normalize(r.topic.name)),
                       )
                     }
+                    ariaLabel={`Select ${r.topic.name}`}
                   />
                   <span className="break-words font-semibold text-foreground">
                     {r.topic.name}
-                    <span className="mt-1 block text-xs font-normal text-muted-foreground">
-                      {r.topic.unit}
-                    </span>
+                    {r.topic.unit && (
+                      <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                        {r.topic.unit}
+                      </span>
+                    )}
                   </span>
-                </label>
+                </div>
                 <div className="flex gap-2">
                   <PriorityBadge level={r.level} />
                   {r.provisional && <Badge tone="amber">Provisional</Badge>}
                 </div>
               </div>
-              <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
+              <ul className="mt-3 space-y-1 pl-9 text-xs text-muted-foreground">
                 {r.reasons.map((reason) => (
-                  <li key={reason}>{reason}</li>
+                  <li key={reason} className="flex gap-1.5">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
+                    <span>{reason}</span>
+                  </li>
                 ))}
               </ul>
-              <div className="mt-3 flex flex-wrap gap-3">
-                {r.evidence.map((p) => (
-                  <a
-                    key={p.id}
-                    href={p.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-xs text-primary underline"
-                  >
-                    {p.title} · {p.year || "year unverified"}
-                  </a>
-                ))}
-              </div>
-              <Field label="Preparation status">
-                <select
-                  className={`${inputCls} mt-2 max-w-48`}
-                  value={r.topic.status}
-                  onChange={(e) => {
-                    const status = e.target.value as Status;
-                    if (baseExam?.topics.some((t) => t.id === r.topic.id))
-                      actions.setTopicStatus(r.topic.id, status);
-                    else editTopic(r.topic.id, { status });
-                  }}
-                >
-                  {["Not Started", "Learning", "Revised"].map((v) => (
-                    <option key={v}>{v}</option>
+              {r.evidence.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-3 pl-9">
+                  {r.evidence.map((p) => (
+                    <a
+                      key={p.id}
+                      href={p.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-primary transition hover:underline"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      {p.title} · {p.year || "year unverified"}
+                    </a>
                   ))}
-                </select>
-              </Field>
+                </div>
+              )}
+              <div className="mt-3 pl-9">
+                <Field label="Preparation status">
+                  <select
+                    className={`${inputCls} mt-1 max-w-48`}
+                    value={r.topic.status}
+                    onChange={(e) => {
+                      const status = e.target.value as Status;
+                      if (baseExam?.topics.some((t) => t.id === r.topic.id))
+                        actions.setTopicStatus(r.topic.id, status);
+                      else editTopic(r.topic.id, { status });
+                    }}
+                  >
+                    {["Not Started", "Learning", "Revised"].map((v) => (
+                      <option key={v}>{v}</option>
+                    ))}
+                  </select>
+                </Field>
+              </div>
             </article>
           ))}
           {!baseExam && (

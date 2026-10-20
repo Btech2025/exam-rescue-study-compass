@@ -253,12 +253,13 @@ function ExamsPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           {exams.map((e) => {
             const d = daysBetween(today, e.date);
+            const revised = e.topics.filter((t) => t.status === "Revised").length;
             return (
-              <Panel key={e.id}>
+              <Panel key={e.id} className="animate-list transition hover:shadow-md">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-lg font-semibold">{e.name}</h3>
-                    <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-bold text-foreground">{e.name}</h3>
+                    <div className="mt-1.5 flex flex-wrap gap-2 text-xs text-muted-foreground">
                       <Badge tone="violet">{e.subject}</Badge>
                       <span className="flex items-center gap-1">
                         <CalendarDays className="h-3.5 w-3.5" />
@@ -270,17 +271,34 @@ function ExamsPage() {
                       </span>
                     </div>
                   </div>
-                  <Badge tone={d < 0 ? "muted" : d <= 3 ? "red" : d <= 7 ? "amber" : "lime"}>
+                  <Badge
+                    tone={d < 0 ? "muted" : d <= 3 ? "red" : d <= 7 ? "amber" : "lime"}
+                    className="shrink-0"
+                  >
                     {d < 0 ? "Finished" : d === 0 ? "Today" : `${d}d left`}
                   </Badge>
                 </div>
-                <div className="mt-4 space-y-1.5">
+                {e.topics.length > 0 && (
+                  <div className="mt-3 mb-1">
+                    <div className="mb-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span>Topics revised</span>
+                      <span className="font-mono">{revised}/{e.topics.length}</span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-signal transition-all duration-500"
+                        style={{ width: `${(revised / e.topics.length) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+                <div className="mt-3 space-y-1">
                   {e.topics.map((t) => (
                     <div
                       key={t.id}
-                      className="group flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-surface"
+                      className="group flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-sm transition hover:bg-surface"
                     >
-                      <span className="truncate">{t.name}</span>
+                      <span className="truncate text-foreground">{t.name}</span>
                       <span className="flex items-center gap-1.5">
                         <span className="hidden text-[11px] text-muted-foreground sm:inline">
                           {t.difficulty} · {t.importance}

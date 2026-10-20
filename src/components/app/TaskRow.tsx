@@ -15,16 +15,16 @@ export function TaskRow({ task, sub }: { task: Task; sub?: string | undefined })
         if (completing) toast.success("Task completed", { description: task.title });
       }}
       className={cn(
-        "flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left transition-all duration-200 hover:border-primary/40 hover:shadow-sm",
-        task.done && "border-signal/20 bg-signal/[0.03] opacity-70",
+        "flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left transition-all duration-200 hover:border-primary/40 hover:shadow-sm active:scale-[0.99]",
+        task.done && "border-signal/30 bg-signal/[0.04] opacity-75",
       )}
     >
       <span
         className={cn(
           "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-200",
           task.done
-            ? "border-signal bg-signal text-signal-foreground scale-100"
-            : "border-input hover:border-primary",
+            ? "border-signal bg-signal text-signal-foreground scale-110 shadow-sm shadow-signal/30"
+            : "border-input hover:border-primary hover:scale-105",
         )}
       >
         {task.done && <Check className="animate-check h-4 w-4" strokeWidth={3} />}
