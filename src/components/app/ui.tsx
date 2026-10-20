@@ -327,3 +327,122 @@ export function Celebration({ show }: { show: boolean }) {
     </div>
   );
 }
+
+/** A section header with an icon chip, title, subtitle, and optional action. */
+export function SectionHeader({
+  icon,
+  title,
+  sub,
+  action,
+  tone = "primary",
+}: {
+  icon?: ReactNode;
+  title: string;
+  sub?: string;
+  action?: ReactNode;
+  tone?: "primary" | "signal" | "warning" | "muted";
+}) {
+  const chip = {
+    primary: "bg-primary/10 text-primary",
+    signal: "bg-signal/10 text-signal",
+    warning: "bg-warning/15 text-warning",
+    muted: "bg-muted text-muted-foreground",
+  }[tone];
+  return (
+    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-3">
+        {icon && (
+          <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl", chip)}>
+            {icon}
+          </div>
+        )}
+        <div>
+          <h2 className="text-lg font-bold text-foreground">{title}</h2>
+          {sub && <p className="text-sm text-muted-foreground">{sub}</p>}
+        </div>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+/** A premium toggle/check control with animated checkmark. */
+export function CheckToggle({
+  checked,
+  onChange,
+  label,
+  ariaLabel,
+}: {
+  checked: boolean;
+  onChange: (next: boolean) => void;
+  label?: ReactNode;
+  ariaLabel?: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      onClick={() => onChange(!checked)}
+      className="group flex items-center gap-3 text-left"
+    >
+      <span
+        className={cn(
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-200",
+          checked
+            ? "border-primary bg-primary text-primary-foreground scale-100"
+            : "border-input bg-card group-hover:border-primary",
+        )}
+      >
+        {checked && <Check className="animate-check h-4 w-4" strokeWidth={3} />}
+      </span>
+      {label && <span className="text-sm text-foreground">{label}</span>}
+    </button>
+  );
+}
+
+/** A drop zone for file uploads with a premium look. */
+export function DropZone({
+  icon,
+  title,
+  hint,
+  accept,
+  busy,
+  onFile,
+  className,
+}: {
+  icon?: ReactNode;
+  title: string;
+  hint?: string;
+  accept?: string;
+  busy?: boolean;
+  onFile: (file: File | undefined) => void;
+  className?: string;
+}) {
+  return (
+    <label
+      className={cn(
+        "group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/30 bg-primary/[0.04] p-6 text-center transition hover:border-primary/50 hover:bg-primary/[0.08]",
+        busy && "pointer-events-none opacity-70",
+        className,
+      )}
+    >
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:scale-110 group-hover:bg-primary/15">
+        {icon}
+      </span>
+      <span className="text-sm font-semibold text-foreground">
+        {busy ? "Reading…" : title}
+      </span>
+      {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
+      <input
+        type="file"
+        accept={accept}
+        disabled={busy}
+        onChange={(e) => onFile(e.target.files?.[0])}
+        className="hidden"
+      />
+    </label>
+  );
+}
+

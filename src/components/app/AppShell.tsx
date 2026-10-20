@@ -34,7 +34,7 @@ const NAV = [
 
 function NavList({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   return (
-    <nav className="flex flex-col gap-0.5">
+    <nav className="flex flex-col gap-1">
       {NAV.map(({ to, label, icon: Icon }) => (
         <Link
           key={to}
@@ -43,11 +43,15 @@ function NavList({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: 
           activeOptions={{ exact: to === "/" }}
           className="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-surface hover:text-foreground"
           activeProps={{
-            className: "!bg-primary/10 !text-primary !font-semibold",
+            className:
+              "!bg-primary/10 !text-primary !font-semibold [&>.nav-bar]:opacity-100 [&>.nav-ic]:bg-primary/20",
           }}
           title={collapsed ? label : undefined}
         >
-          <Icon className="h-[18px] w-[18px] shrink-0 transition-transform group-hover:scale-110" />
+          <span className="nav-bar pointer-events-none absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-primary opacity-0 transition-opacity duration-200" />
+          <span className="nav-ic flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-all duration-200 group-hover:scale-110 group-hover:bg-card">
+            <Icon className="h-[18px] w-[18px]" />
+          </span>
           {!collapsed && <span className="truncate">{label}</span>}
         </Link>
       ))}

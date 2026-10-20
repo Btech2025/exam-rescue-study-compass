@@ -15,7 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge, Button, Field, PageHeader, PriorityBadge, inputCls } from "./ui";
+import { Badge, Button, DropZone, Field, PageHeader, PriorityBadge, SectionHeader, inputCls } from "./ui";
 import { actions, useAppState } from "@/lib/store";
 import { addDays, fmtDay, fmtMin, todayISO, uid } from "@/lib/engine";
 import {
@@ -228,80 +228,75 @@ export function ExamIntelligence({ research = false }: { research?: boolean }) {
       {/* Upload / paste section — first thing students see */}
       {!research && (
         <section className="space-y-4">
-          <div className="panel p-6">
-            <div className="flex items-center gap-2">
-              <Upload className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Upload your study material</h2>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Drop a syllabus PDF or paste text directly. We'll extract units and topics for you to
-              review.
-            </p>
-            <label className="mt-4 flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-primary/30 bg-primary/5 p-4 text-sm font-medium text-primary transition hover:bg-primary/10 hover:border-primary/50">
-              <Upload className="h-5 w-5" />
-              {busy ? "Reading PDF…" : "Choose a syllabus PDF"}
-              <input
-                aria-label="Upload syllabus PDF"
-                className="hidden"
-                type="file"
-                accept="application/pdf"
-                disabled={busy}
-                onChange={(e) => void upload(e.target.files?.[0])}
-              />
-            </label>
-            <p className="mt-2 text-xs text-muted-foreground">
-              PDF only, up to 20 MB. Private on this device — originals are never uploaded. Scanned
-              PDFs need pasted text.
-            </p>
-          </div>
+          <Panel>
+            <SectionHeader
+              icon={<Upload className="h-5 w-5" />}
+              title="Upload your study material"
+              sub="Drop a syllabus PDF or paste text directly. We'll extract units and topics for you to review."
+            />
+            <DropZone
+              icon={<Upload className="h-5 w-5" />}
+              title="Choose a syllabus PDF"
+              hint="PDF only, up to 20 MB. Private on this device — originals are never uploaded."
+              accept="application/pdf"
+              busy={busy}
+              onFile={(f) => void upload(f)}
+            />
+          </Panel>
 
-          <Field label="Or paste syllabus text directly">
+          <Panel>
+            <SectionHeader
+              icon={<FileSearch className="h-5 w-5" />}
+              title="Or paste syllabus text"
+              sub="Skip the upload — paste text and we'll extract topics instantly."
+              tone="muted"
+            />
             <textarea
               className={`${inputCls} h-40 py-3`}
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Unit 1: Foundations&#10;Arrays: traversal, insertion, deletion&#10;Unit 2: Trees&#10;Binary search trees"
             />
-          </Field>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              disabled={busy}
-              onClick={() => {
-                try {
-                  extract(text);
-                } catch (e) {
-                  setError(e instanceof Error ? e.message : "Cannot extract topics.");
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button
+                disabled={busy}
+                onClick={() => {
+                  try {
+                    extract(text);
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : "Cannot extract topics.");
+                  }
+                }}
+              >
+                {busy ? "Reading PDF…" : "Extract topics"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  update({
+                    ...draft,
+                    topics: [
+                      ...draft.topics,
+                      {
+                        id: uid(),
+                        name: "",
+                        unit: "",
+                        subtopics: [],
+                        marks: "",
+                        objectives: "",
+                        difficulty: "Medium",
+                        importance: "Medium",
+                        status: "Not Started",
+                      },
+                    ],
+                  })
                 }
-              }}
-            >
-              {busy ? "Reading PDF…" : "Extract topics"}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() =>
-                update({
-                  ...draft,
-                  topics: [
-                    ...draft.topics,
-                    {
-                      id: uid(),
-                      name: "",
-                      unit: "",
-                      subtopics: [],
-                      marks: "",
-                      objectives: "",
-                      difficulty: "Medium",
-                      importance: "Medium",
-                      status: "Not Started",
-                    },
-                  ],
-                })
-              }
-            >
-              <Plus className="h-4 w-4" />
-              Add topic manually
-            </Button>
-          </div>
+              >
+                <Plus className="h-4 w-4" />
+                Add topic manually
+              </Button>
+            </div>
+          </Panel>
         </section>
       )}
 

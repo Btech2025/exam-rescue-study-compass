@@ -138,7 +138,11 @@ const QUICK_ACTIONS = [
 function LandingHero() {
   return (
     <section className="relative overflow-hidden rounded-2xl bg-hero px-6 py-16 sm:px-10 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-3xl text-center">
+      {/* Decorative animated orbs */}
+      <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[oklch(0.70_0.15_285)] opacity-20 blur-3xl animate-float" />
+      <div className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-primary opacity-15 blur-3xl animate-float [animation-delay:1.5s]" />
+      <div className="pointer-events-none absolute right-10 top-10 h-24 w-24 rounded-full border border-white/10 animate-orbit [animation-duration:30s]" />
+      <div className="relative mx-auto max-w-3xl text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur">
           <Sparkles className="h-3.5 w-3.5 text-[oklch(0.70_0.15_285)]" />
           Rule-based exam prep, not AI guesswork
@@ -146,7 +150,7 @@ function LandingHero() {
         <h1 className="font-display text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
           Your exam is closer.
           <br />
-          Your next step is clearer.
+          <span className="gradient-text">Your next step is clearer.</span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-base text-white/70 sm:text-lg">
           Drop your study material. We'll help you figure out what to study first.

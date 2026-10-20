@@ -115,6 +115,21 @@
 @utility bg-hero {
   background-image: var(--gradient-hero);
 }
+@utility gradient-text {
+  background: linear-gradient(
+    90deg,
+    var(--accent-violet) 0%,
+    var(--primary) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility surface-2 {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
 
 @layer base {
   * {
@@ -254,6 +269,45 @@ html {
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.04);
+  }
+}
+.animate-float {
+  animation: float-soft 6s ease-in-out infinite;
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-orbit {
+  animation: orbit 24s linear infinite;
+}
+
+@keyframes list-stagger {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-list {
+  animation: list-stagger 0.35s ease-out both;
 }
 
 /* Reduced motion */
